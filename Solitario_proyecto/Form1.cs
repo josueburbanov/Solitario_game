@@ -97,7 +97,7 @@ namespace Solitario_proyecto
                     if (carta_arrastrada.Valor + 1 == carta_caida.Valor && chequear_colores(carta_arrastrada, carta_caida))
                     {
                         picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y + 20);
-                        carta_caida.CartasDependientes.Add(carta_arrastrada);
+                        carta_caida.CartasDependientes.Add(carta_arrastrada); 
                     }
                 }
             }
