@@ -17,14 +17,12 @@ namespace Solitario_proyecto
     public partial class Form1 : Form
     {
         Baraja cartas = new Baraja();
+        int contador_cartas_boca_abajo = 0;
+        int puntos = 0;
 
         public Form1()
         {
             InitializeComponent();
-            pctbx_boca_abajo.AllowDrop = true;
-            pctbx_boca_abajo.DragEnter += pctbx_boca_abajo_DragEnter;
-            pctbx_baraja_0.AllowDrop = true;
-            pctbx_baraja_0.DragEnter += pctbx_boca_abajo_DragEnter;
 
 
             //Cartas que arrancan con la posibilidad de ser caídas
@@ -49,6 +47,18 @@ namespace Solitario_proyecto
             pctbx_espacio7_6.AllowDrop = true;
             pctbx_espacio7_6.DragEnter += pctbx_boca_abajo_DragEnter;
 
+            pctbx_deck1.AllowDrop = true;
+            pctbx_deck1.DragEnter += pctbx_deck_DragEnter;
+
+            pctbx_deck2.AllowDrop = true;
+            pctbx_deck2.DragEnter += pctbx_deck_DragEnter;
+
+            pctbx_deck3.AllowDrop = true;
+            pctbx_deck3.DragEnter += pctbx_deck_DragEnter;
+
+            pctbx_deck4.AllowDrop = true;
+            pctbx_deck4.DragEnter += pctbx_deck_DragEnter;
+
             //Cartas que arrancan con la posibilidad de ser arrastradas
             pctbx_espacio1.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
             pctbx_espacio2_1.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
@@ -59,11 +69,52 @@ namespace Solitario_proyecto
             pctbx_espacio7_6.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
         }
 
+        private void pctbx_deck_DragEnter(object sender, DragEventArgs e)
+        {
+            PictureBox picture_arrastrado = e.Data.GetData("System.Windows.Forms.PictureBox") as PictureBox;
+            PictureBox picture_caido = sender as PictureBox;
+            if (picture_arrastrado == pctbx_baraja_0 || picture_arrastrado == pctbx_baraja_1 || picture_arrastrado == pctbx_baraja_2)
+            {
+
+                PictureBox picture_box_vacio = new PictureBox();
+                picture_box_vacio.Location = new Point(348, 104);
+                picture_box_vacio.Name = "pctbx_" +
+                    cartas.Cartas_boca_abajo[cartas.Cartas_boca_abajo.IndexOf((Carta)picture_arrastrado.Tag)].Palo + "_" +
+                    cartas.Cartas_boca_abajo[cartas.Cartas_boca_abajo.IndexOf((Carta)picture_arrastrado.Tag)].Simbolo;
+                picture_box_vacio.Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+                contador_cartas_boca_abajo++;
+                picture_box_vacio.Size = new Size(94, 132);
+                picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
+                cartas.Cartas_boca_abajo.Remove((Carta)picture_arrastrado.Tag);
+            }
+
+            if (picture_caido.Image == null)
+            {
+                Carta carta_arrastrada = (Carta)picture_arrastrado.Tag;
+                Carta carta_caida = (Carta)picture_caido.Tag;
+                if (carta_arrastrada.Valor == 1)
+                {
+                    picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
+                    picture_arrastrado.BringToFront();
+                    revelar_carta_detras_arrastrada(carta_arrastrada);
+                }
+            }
+            else
+            {
+                Carta carta_arrastrada = (Carta)picture_arrastrado.Tag;
+                Carta carta_caida = (Carta)picture_caido.Tag;
+                if (carta_arrastrada.Valor == carta_caida.Valor + 1 && carta_arrastrada.Palo.Equals(carta_caida.Palo))
+                {
+                    picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
+                    picture_arrastrado.BringToFront();
+                    revelar_carta_detras_arrastrada(carta_arrastrada);
+                }
+            }
+        }
+
         private async Task<Baraja> cargar_recursos()
         {
-            string url = "http://localhost:29485/Service1.svc";
-            RestClient cliente;
-            cliente = new RestClient(url);
+            RestClient cliente = new RestClient("http://localhost:29485/Service1.svc");
             var solicitud = new RestRequest(Method.GET);
             solicitud.Resource = "/colocar_cartas";
             solicitud.RequestFormat = DataFormat.Json;
@@ -89,34 +140,45 @@ namespace Solitario_proyecto
                 Carta carta_arrastrada = (Carta)picture_arrastrado.Tag;
                 Carta carta_caida = (Carta)picture_caido.Tag;
 
-
-
                 if (!carta_arrastrada.Boca_abajo)
                 {
-                    if (carta_arrastrada.CartasDependientes.Count != 0)
+                    if (colocar_carta_caida(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida))
                     {
-                        colocar_carta_caida(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida);
-                        Carta carta_aux_arrastrada = carta_caida;
-                        foreach (var item in carta_arrastrada.CartasDependientes)
+                        revelar_carta_detras_arrastrada(carta_arrastrada);
+                        if (carta_arrastrada.CartasDependientes.Count != 0)
                         {
-                            colocar_carta_caida(picture_arrastrado, picture_caido, item, carta_aux_arrastrada);
-                            carta_aux_arrastrada = item;
+                            Carta carta_aux_arrastrada = carta_arrastrada;
+                            foreach (var item in carta_arrastrada.CartasDependientes)
+                            {
+                                colocar_carta_caida(buscar_picture_box(item), buscar_picture_box(carta_aux_arrastrada), item, carta_aux_arrastrada);
+                                carta_aux_arrastrada = item;
+                            }
                         }
+
                     }
-                    colocar_carta_caida(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida);
-                    revelar_carta_detras_caida(carta_caida);
                 }
             }
         }
 
-        private void revelar_carta_detras_caida(Carta carta_caida)
+        private void revelar_carta_detras_arrastrada(Carta carta_arrastrada)
         {
-            if (cartas.Cartas_primer_espacio.Contains(carta_caida))
+            PictureBox picture_carta_detras;
+            if (cartas.Cartas_primer_espacio.Contains(carta_arrastrada))
             {
-                cartas.Cartas_primer_espacio.Remove(carta_caida);
-                if(cartas.Cartas_primer_espacio.Count != 0)
-                {
+                cartas.Cartas_primer_espacio.Remove(carta_arrastrada);
+                if (carta_arrastrada.CartasDependientes.Count != 0)
+                    cartas.Cartas_primer_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
 
+                if (cartas.Cartas_primer_espacio.Count != 0)
+                {
+                    picture_carta_detras = buscar_picture_box(cartas.Cartas_primer_espacio.Last());
+                    picture_carta_detras.Image = Image.FromFile(cartas.Cartas_primer_espacio.Last().Ruta_imagen);
+
+                    picture_carta_detras.AllowDrop = true;
+                    picture_carta_detras.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_carta_detras.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                    cartas.Cartas_primer_espacio.Last().Boca_abajo = false;
+                    picture_carta_detras.Tag = cartas.Cartas_primer_espacio.Last();
                 }
                 else
                 {
@@ -125,22 +187,200 @@ namespace Solitario_proyecto
                     picture_box_vacio.Name = "pctbx_espacio1_vacio";
                     picture_box_vacio.Size = new Size(94, 132);
                     picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
+                    picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
                     picture_box_vacio.TabIndex = 8;
                     picture_box_vacio.TabStop = false;
                 }
             }
-                
-            
+            else if (cartas.Cartas_segundo_espacio.Contains(carta_arrastrada))
+            {
+                cartas.Cartas_segundo_espacio.Remove(carta_arrastrada);
+                if (carta_arrastrada.CartasDependientes.Count != 0)
+                    cartas.Cartas_segundo_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
+                if (cartas.Cartas_segundo_espacio.Count != 0)
+                {
+                    picture_carta_detras = buscar_picture_box(cartas.Cartas_segundo_espacio.Last());
+                    picture_carta_detras.Image = Image.FromFile(cartas.Cartas_segundo_espacio.Last().Ruta_imagen);
+                    picture_carta_detras.AllowDrop = true;
+                    picture_carta_detras.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_carta_detras.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                    cartas.Cartas_segundo_espacio.Last().Boca_abajo = false;
+                    picture_carta_detras.Tag = cartas.Cartas_segundo_espacio.Last();
+                }
+                else
+                {
+                    PictureBox picture_box_vacio = new PictureBox();
+                    picture_box_vacio.Location = new Point(277, 336);
+                    picture_box_vacio.Name = "pctbx_espacio2_vacio";
+                    picture_box_vacio.Size = new Size(94, 132);
+                    picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
+                    picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
+                    picture_box_vacio.TabIndex = 9;
+                    picture_box_vacio.TabStop = false;
+                }
+            }
+            else if (cartas.Cartas_tercer_espacio.Contains(carta_arrastrada))
+            {
+                cartas.Cartas_tercer_espacio.Remove(carta_arrastrada);
+                if (carta_arrastrada.CartasDependientes.Count != 0)
+                    cartas.Cartas_tercer_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
+                if (cartas.Cartas_tercer_espacio.Count != 0)
+                {
+                    picture_carta_detras = buscar_picture_box(cartas.Cartas_tercer_espacio.Last());
+                    picture_carta_detras.Image = Image.FromFile(cartas.Cartas_tercer_espacio.Last().Ruta_imagen);
+                    picture_carta_detras.AllowDrop = true;
+                    picture_carta_detras.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_carta_detras.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                    cartas.Cartas_tercer_espacio.Last().Boca_abajo = false;
+                    picture_carta_detras.Tag = cartas.Cartas_tercer_espacio.Last();
+                }
+                else
+                {
+                    PictureBox picture_box_vacio = new PictureBox();
+                    picture_box_vacio.Location = new Point(442, 336);
+                    picture_box_vacio.Name = "pctbx_espacio3_vacio";
+                    picture_box_vacio.Size = new Size(94, 132);
+                    picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
+                    picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
+                    picture_box_vacio.TabIndex = 9;
+                    picture_box_vacio.TabStop = false;
+                }
+            }
+            else if (cartas.Cartas_cuarto_espacio.Contains(carta_arrastrada))
+            {
+                cartas.Cartas_cuarto_espacio.Remove(carta_arrastrada);
+                if (carta_arrastrada.CartasDependientes.Count != 0)
+                    cartas.Cartas_cuarto_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
+                if (cartas.Cartas_cuarto_espacio.Count != 0)
+                {
+                    picture_carta_detras = buscar_picture_box(cartas.Cartas_cuarto_espacio.Last());
+                    picture_carta_detras.Image = Image.FromFile(cartas.Cartas_cuarto_espacio.Last().Ruta_imagen);
+                    picture_carta_detras.AllowDrop = true;
+                    picture_carta_detras.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_carta_detras.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                    cartas.Cartas_cuarto_espacio.Last().Boca_abajo = false;
+                    picture_carta_detras.Tag = cartas.Cartas_cuarto_espacio.Last();
+                }
+                else
+                {
+                    PictureBox picture_box_vacio = new PictureBox();
+                    picture_box_vacio.Location = new Point(608, 336);
+                    picture_box_vacio.Name = "pctbx_espacio4_vacio";
+                    picture_box_vacio.Size = new Size(94, 132);
+                    picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
+                    picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
+                    picture_box_vacio.TabIndex = 9;
+                    picture_box_vacio.TabStop = false;
+                }
+            }
+            else if (cartas.Cartas_quinto_espacio.Contains(carta_arrastrada))
+            {
+                cartas.Cartas_quinto_espacio.Remove(carta_arrastrada);
+                if (carta_arrastrada.CartasDependientes.Count != 0)
+                    cartas.Cartas_quinto_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
+                if (cartas.Cartas_quinto_espacio.Count != 0)
+                {
+                    picture_carta_detras = buscar_picture_box(cartas.Cartas_quinto_espacio.Last());
+                    picture_carta_detras.Image = Image.FromFile(cartas.Cartas_quinto_espacio.Last().Ruta_imagen);
+                    picture_carta_detras.AllowDrop = true;
+                    picture_carta_detras.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_carta_detras.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                    cartas.Cartas_quinto_espacio.Last().Boca_abajo = false;
+                    picture_carta_detras.Tag = cartas.Cartas_quinto_espacio.Last();
+                }
+                else
+                {
+                    PictureBox picture_box_vacio = new PictureBox();
+                    picture_box_vacio.Location = new Point(763, 336);
+                    picture_box_vacio.Name = "pctbx_espacio5_vacio";
+                    picture_box_vacio.Size = new Size(94, 132);
+                    picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
+                    picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
+                    picture_box_vacio.TabIndex = 9;
+                    picture_box_vacio.TabStop = false;
+                }
+            }
+            else if (cartas.Cartas_sexto_espacio.Contains(carta_arrastrada))
+            {
+                cartas.Cartas_sexto_espacio.Remove(carta_arrastrada);
+                if (carta_arrastrada.CartasDependientes.Count != 0)
+                    cartas.Cartas_sexto_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
+                if (cartas.Cartas_sexto_espacio.Count != 0)
+                {
+                    picture_carta_detras = buscar_picture_box(cartas.Cartas_sexto_espacio.Last());
+                    picture_carta_detras.Image = Image.FromFile(cartas.Cartas_sexto_espacio.Last().Ruta_imagen);
+                    picture_carta_detras.AllowDrop = true;
+                    picture_carta_detras.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_carta_detras.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                    cartas.Cartas_sexto_espacio.Last().Boca_abajo = false;
+                    picture_carta_detras.Tag = cartas.Cartas_sexto_espacio.Last();
+                }
+                else
+                {
+                    PictureBox picture_box_vacio = new PictureBox();
+                    picture_box_vacio.Location = new Point(763, 336);
+                    picture_box_vacio.Name = "pctbx_espacio5_vacio";
+                    picture_box_vacio.Size = new Size(94, 132);
+                    picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
+                    picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
+                    picture_box_vacio.TabIndex = 9;
+                    picture_box_vacio.TabStop = false;
+                }
+            }
+            else if (cartas.Cartas_septimo_espacio.Contains(carta_arrastrada))
+            {
+                cartas.Cartas_septimo_espacio.Remove(carta_arrastrada);
+                if (carta_arrastrada.CartasDependientes.Count != 0)
+                    cartas.Cartas_septimo_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
+                if (cartas.Cartas_septimo_espacio.Count != 0)
+                {
+                    picture_carta_detras = buscar_picture_box(cartas.Cartas_septimo_espacio.Last());
+                    picture_carta_detras.Image = Image.FromFile(cartas.Cartas_septimo_espacio.Last().Ruta_imagen);
+                    picture_carta_detras.AllowDrop = true;
+                    picture_carta_detras.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_carta_detras.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                    cartas.Cartas_septimo_espacio.Last().Boca_abajo = false;
+                    picture_carta_detras.Tag = cartas.Cartas_septimo_espacio.Last();
+                }
+                else
+                {
+                    PictureBox picture_box_vacio = new PictureBox();
+                    picture_box_vacio.Location = new Point(763, 336);
+                    picture_box_vacio.Name = "pctbx_espacio5_vacio";
+                    picture_box_vacio.Size = new Size(94, 132);
+                    picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
+                    picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
+                    picture_box_vacio.TabIndex = 9;
+                    picture_box_vacio.TabStop = false;
+                }
+            }
         }
 
-        private void colocar_carta_caida(PictureBox picture_arrastrado, PictureBox picture_caido, Carta carta_arrastrada, Carta carta_caida)
+        private PictureBox buscar_picture_box(Carta tag)
+        {
+            foreach (var item in Controls.OfType<PictureBox>())
+            {
+                if (item.Tag == tag)
+                {
+                    return item;
+                }
+            }
+            return null;
+
+        }
+
+        private bool colocar_carta_caida(PictureBox picture_arrastrado, PictureBox picture_caido, Carta carta_arrastrada, Carta carta_caida)
         {
             if (carta_arrastrada.Valor + 1 == carta_caida.Valor && chequear_colores(carta_arrastrada, carta_caida))
             {
                 picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y + 20);
                 picture_arrastrado.BringToFront();
                 carta_caida.CartasDependientes.Add(carta_arrastrada);
+                if (carta_arrastrada.CartasDependientes.Count != 0)
+                    carta_caida.CartasDependientes.AddRange(carta_arrastrada.CartasDependientes);
+                return true;
             }
+            return false;
         }
 
         private bool chequear_colores(Carta carta_arrastrada, Carta carta_caida)
@@ -162,10 +402,22 @@ namespace Solitario_proyecto
             {
                 comparacion = carta_caida.Palo == "treboles" || carta_caida.Palo == "negros";
             }
-            return comparacion;
+            return true;
         }
 
         private void pctbx_baraja_0_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                var img = sender as PictureBox;
+                if (img == null) return;
+                if (DoDragDrop(img, DragDropEffects.Move) == DragDropEffects.Move)
+                {
+                    img.Image = null;
+                }
+            }
+        }
+        private void pctbx_baraja_2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -425,7 +677,43 @@ namespace Solitario_proyecto
                     pctbx_espacio7_6.Tag = cartas.Cartas_septimo_espacio[i];
                 }
             }
+            for (int i = 0; i < cartas.Cartas_boca_abajo.Count; i++)
+            {
+                cartas.Cartas_boca_abajo[i].Simbolo = Regex.Replace(cartas.Cartas_boca_abajo[i].Simbolo, @"\s+", "");
+                cartas.Cartas_boca_abajo[i].Palo = Regex.Replace(cartas.Cartas_boca_abajo[i].Palo, @"\s+", "");
+                string rutaImagen = "..\\..\\Resources\\" + cartas.Cartas_boca_abajo[i].Simbolo + "_" + cartas.Cartas_boca_abajo[i].Palo + ".png";
+                File.WriteAllBytes(rutaImagen, cartas.Cartas_boca_abajo[i].Imagen);
+                cartas.Cartas_boca_abajo[i].Ruta_imagen = rutaImagen;
+                //item.Imagen = null;
+                if (i == 0)
+                {
+                    pctbx_baraja_0.Image = Image.FromFile(rutaImagen);
+                    pctbx_baraja_0.Tag = cartas.Cartas_boca_abajo[i];
+                }
+                else if (i == 1)
+                {
+                    pctbx_baraja_1.Image = Image.FromFile(rutaImagen);
+                    pctbx_baraja_1.Tag = cartas.Cartas_boca_abajo[i];
+                }
+                else if (i == 2)
+                {
+                    pctbx_baraja_2.Image = Image.FromFile(rutaImagen);
+                    pctbx_baraja_2.Tag = cartas.Cartas_boca_abajo[i];
+                }
+            }
+        }
 
+        private void pctbx_baraja_Click(object sender, EventArgs e)
+        {
+            if (contador_cartas_boca_abajo == 24) contador_cartas_boca_abajo = 1;
+            pctbx_baraja_0.Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+            contador_cartas_boca_abajo++;
+            if (contador_cartas_boca_abajo == 24) contador_cartas_boca_abajo = 1;
+            pctbx_baraja_1.Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+            contador_cartas_boca_abajo++;
+            if (contador_cartas_boca_abajo == 24) contador_cartas_boca_abajo = 1;
+            pctbx_baraja_2.Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+            contador_cartas_boca_abajo--;
         }
 
 

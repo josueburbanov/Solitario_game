@@ -83,6 +83,16 @@ namespace Solitario_proyecto.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap back_prinicipal {
+            get {
+                object obj = ResourceManager.GetObject("back_prinicipal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap back4 {
             get {
                 object obj = ResourceManager.GetObject("back4", resourceCulture);
@@ -96,6 +106,16 @@ namespace Solitario_proyecto.Properties {
         internal static System.Drawing.Bitmap back5 {
             get {
                 object obj = ResourceManager.GetObject("back5", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap blue_back {
+            get {
+                object obj = ResourceManager.GetObject("blue_back", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

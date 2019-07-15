@@ -46,7 +46,7 @@
             this.pctbx_deck2 = new System.Windows.Forms.PictureBox();
             this.pctbx_deck3 = new System.Windows.Forms.PictureBox();
             this.pctbx_deck4 = new System.Windows.Forms.PictureBox();
-            this.pctbx_boca_abajo = new System.Windows.Forms.PictureBox();
+            this.pctbx_baraja = new System.Windows.Forms.PictureBox();
             this.pctbx_espacio2_1 = new System.Windows.Forms.PictureBox();
             this.pctbx_espacio3_1 = new System.Windows.Forms.PictureBox();
             this.pctbx_espacio3_2 = new System.Windows.Forms.PictureBox();
@@ -83,7 +83,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_deck2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_deck3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_deck4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pctbx_boca_abajo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio2_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio3_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio3_2)).BeginInit();
@@ -299,16 +299,17 @@
             this.pctbx_deck4.TabIndex = 17;
             this.pctbx_deck4.TabStop = false;
             // 
-            // pctbx_boca_abajo
+            // pctbx_baraja
             // 
-            this.pctbx_boca_abajo.BackColor = System.Drawing.Color.Silver;
-            this.pctbx_boca_abajo.Image = global::Solitario_proyecto.Properties.Resources.back_card;
-            this.pctbx_boca_abajo.Location = new System.Drawing.Point(110, 104);
-            this.pctbx_boca_abajo.Name = "pctbx_boca_abajo";
-            this.pctbx_boca_abajo.Size = new System.Drawing.Size(94, 132);
-            this.pctbx_boca_abajo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pctbx_boca_abajo.TabIndex = 18;
-            this.pctbx_boca_abajo.TabStop = false;
+            this.pctbx_baraja.BackColor = System.Drawing.Color.Silver;
+            this.pctbx_baraja.Image = global::Solitario_proyecto.Properties.Resources.blue_back;
+            this.pctbx_baraja.Location = new System.Drawing.Point(110, 104);
+            this.pctbx_baraja.Name = "pctbx_baraja";
+            this.pctbx_baraja.Size = new System.Drawing.Size(94, 132);
+            this.pctbx_baraja.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pctbx_baraja.TabIndex = 18;
+            this.pctbx_baraja.TabStop = false;
+            this.pctbx_baraja.Click += new System.EventHandler(this.pctbx_baraja_Click);
             // 
             // pctbx_espacio2_1
             // 
@@ -508,7 +509,6 @@
             this.pctbx_baraja_1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pctbx_baraja_1.TabIndex = 43;
             this.pctbx_baraja_1.TabStop = false;
-            
             // 
             // pctbx_baraja_2
             // 
@@ -519,6 +519,7 @@
             this.pctbx_baraja_2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pctbx_baraja_2.TabIndex = 44;
             this.pctbx_baraja_2.TabStop = false;
+            this.pctbx_baraja_2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pctbx_baraja_2_MouseDown);
             // 
             // button1
             // 
@@ -563,7 +564,7 @@
             this.Controls.Add(this.pctbx_espacio3_2);
             this.Controls.Add(this.pctbx_espacio3_1);
             this.Controls.Add(this.pctbx_espacio2_1);
-            this.Controls.Add(this.pctbx_boca_abajo);
+            this.Controls.Add(this.pctbx_baraja);
             this.Controls.Add(this.pctbx_deck4);
             this.Controls.Add(this.pctbx_deck3);
             this.Controls.Add(this.pctbx_deck2);
@@ -600,7 +601,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_deck2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_deck3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_deck4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pctbx_boca_abajo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio2_1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio3_1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio3_2)).EndInit();
@@ -649,7 +650,7 @@
         private System.Windows.Forms.PictureBox pctbx_deck2;
         private System.Windows.Forms.PictureBox pctbx_deck3;
         private System.Windows.Forms.PictureBox pctbx_deck4;
-        private System.Windows.Forms.PictureBox pctbx_boca_abajo;
+        private System.Windows.Forms.PictureBox pctbx_baraja;
         private System.Windows.Forms.PictureBox pctbx_espacio2_1;
         private System.Windows.Forms.PictureBox pctbx_espacio3_1;
         private System.Windows.Forms.PictureBox pctbx_espacio3_2;
