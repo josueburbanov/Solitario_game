@@ -19,10 +19,38 @@ namespace Solitario_proyecto
         Baraja cartas = new Baraja();
         int contador_cartas_boca_abajo = 0;
         int puntos = 0;
+        Usuario usuario_entrar = new Usuario();
+        int contador_seg = 0;
+        int contador_min = 0;
+        string min = "";
+        string seg = "";
+        Timer timer = new Timer{ Interval = 1000 };
 
-        public Form1()
+        private void Tick(object sender, EventArgs e)
+        {
+            if (contador_seg == 60)
+            {
+                contador_seg = 0;
+                contador_min++;
+            }
+            contador_seg++;
+
+            if (contador_min < 10) min = "0" + contador_min;
+            else min = contador_min.ToString();
+            if (contador_seg < 10) seg = "0" + contador_seg;
+            else seg = contador_seg.ToString();
+
+            lb_time.Text = min + ":" + seg;
+        }
+
+        public Form1(Usuario usuario_entrar)
         {
             InitializeComponent();
+            this.usuario_entrar = usuario_entrar;
+            lb_usuario.Text = usuario_entrar.Nombre;
+            timer.Tick += Tick;
+            timer.Start();
+
 
 
             //Cartas que arrancan con la posibilidad de ser caídas
@@ -69,6 +97,7 @@ namespace Solitario_proyecto
             pctbx_espacio7_6.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
         }
 
+        
         private void pctbx_deck_DragEnter(object sender, DragEventArgs e)
         {
             PictureBox picture_arrastrado = e.Data.GetData("System.Windows.Forms.PictureBox") as PictureBox;
@@ -97,6 +126,8 @@ namespace Solitario_proyecto
                     picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
                     picture_arrastrado.BringToFront();
                     revelar_carta_detras_arrastrada(carta_arrastrada);
+                    puntos += 10;
+                    lb_puntos.Text = puntos.ToString();
                 }
             }
             else
@@ -108,6 +139,8 @@ namespace Solitario_proyecto
                     picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
                     picture_arrastrado.BringToFront();
                     revelar_carta_detras_arrastrada(carta_arrastrada);
+                    puntos += 10;
+                    lb_puntos.Text = puntos.ToString();
                 }
             }
         }

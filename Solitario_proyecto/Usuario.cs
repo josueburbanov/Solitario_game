@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Solitario_proyecto
 {
-    class Usuario
+    public class Usuario
     {
         private string nombre;
         private string nombre_usuario;
@@ -17,5 +17,6 @@ namespace Solitario_proyecto
         public string Nombre_usuario { get => nombre_usuario; set => nombre_usuario = value; }
         public string Contrasenia { get => contrasenia; set => contrasenia = value; }
         public string Id { get => id; set => id = value; }
+        public string Correo { get; internal set; }
     }
 }
