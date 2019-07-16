@@ -17,14 +17,15 @@ namespace Solitario_proyecto
     public partial class Form1 : Form
     {
         Baraja cartas = new Baraja();
-        int contador_cartas_boca_abajo = 0;
+        int contador_cartas_boca_abajo = 2;
         int puntos = 0;
         Usuario usuario_entrar = new Usuario();
         int contador_seg = 0;
         int contador_min = 0;
         string min = "";
         string seg = "";
-        Timer timer = new Timer{ Interval = 1000 };
+        Timer timer = new Timer { Interval = 1000 };
+        List<PictureBox> pctbxs_cartas_baraja = new List<PictureBox>();
 
         private void Tick(object sender, EventArgs e)
         {
@@ -95,28 +96,21 @@ namespace Solitario_proyecto
             pctbx_espacio5_4.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
             pctbx_espacio6_5.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
             pctbx_espacio7_6.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+
+            //Cartas en baraja (3)
+            pctbxs_cartas_baraja.Add(pctbx_baraja_0);
+            pctbxs_cartas_baraja.Add(pctbx_baraja_1);
+            pctbxs_cartas_baraja.Add(pctbx_baraja_2);
         }
 
-        
+
         private void pctbx_deck_DragEnter(object sender, DragEventArgs e)
         {
             PictureBox picture_arrastrado = e.Data.GetData("System.Windows.Forms.PictureBox") as PictureBox;
             PictureBox picture_caido = sender as PictureBox;
-            if (picture_arrastrado == pctbx_baraja_0 || picture_arrastrado == pctbx_baraja_1 || picture_arrastrado == pctbx_baraja_2)
-            {
 
-                PictureBox picture_box_vacio = new PictureBox();
-                picture_box_vacio.Location = new Point(348, 104);
-                picture_box_vacio.Name = "pctbx_" +
-                    cartas.Cartas_boca_abajo[cartas.Cartas_boca_abajo.IndexOf((Carta)picture_arrastrado.Tag)].Palo + "_" +
-                    cartas.Cartas_boca_abajo[cartas.Cartas_boca_abajo.IndexOf((Carta)picture_arrastrado.Tag)].Simbolo;
-                picture_box_vacio.Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
-                contador_cartas_boca_abajo++;
-                picture_box_vacio.Size = new Size(94, 132);
-                picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
-                cartas.Cartas_boca_abajo.Remove((Carta)picture_arrastrado.Tag);
-            }
 
+            bool carta_movida = false;
             if (picture_caido.Image == null)
             {
                 Carta carta_arrastrada = (Carta)picture_arrastrado.Tag;
@@ -125,9 +119,9 @@ namespace Solitario_proyecto
                 {
                     picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
                     picture_arrastrado.BringToFront();
-                    revelar_carta_detras_arrastrada(carta_arrastrada);
                     puntos += 10;
                     lb_puntos.Text = puntos.ToString();
+                    carta_movida = true;
                 }
             }
             else
@@ -138,11 +132,56 @@ namespace Solitario_proyecto
                 {
                     picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
                     picture_arrastrado.BringToFront();
+                    picture_arrastrado.AllowDrop = true;
+                    picture_arrastrado.DragEnter += pctbx_deck_DragEnter;
                     revelar_carta_detras_arrastrada(carta_arrastrada);
                     puntos += 10;
                     lb_puntos.Text = puntos.ToString();
+                    carta_movida = true;
                 }
             }
+
+            generar_nuevo_pctbx_carta_baraja(picture_arrastrado, carta_movida);
+
+        }
+
+        private bool generar_nuevo_pctbx_carta_baraja(PictureBox picture_arrastrado, bool carta_movida)
+        {
+            if (pctbxs_cartas_baraja.Contains(picture_arrastrado) && carta_movida)
+            {
+                PictureBox picture_box_nuevo = new PictureBox();
+                picture_box_nuevo.Location = new Point(348, 104);
+                picture_box_nuevo.Name = "pctbx_" +
+                    cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Palo + "_" +
+                    cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Simbolo;
+                picture_box_nuevo.Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+                picture_box_nuevo.Size = new Size(94, 132);
+                picture_box_nuevo.SizeMode = PictureBoxSizeMode.StretchImage;
+                Controls.Add(picture_box_nuevo);
+                picture_box_nuevo.BringToFront();
+                picture_box_nuevo.Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
+                cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Boca_abajo = false;
+                picture_box_nuevo.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+
+
+                cartas.Cartas_boca_abajo.Remove((Carta)picture_arrastrado.Tag);
+                pctbxs_cartas_baraja.Remove(picture_arrastrado);
+                pctbxs_cartas_baraja.Add(picture_box_nuevo);
+
+                contador_restar(2);
+                pctbxs_cartas_baraja[0].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+                pctbxs_cartas_baraja[0].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
+                contador_sumar(1);
+                pctbxs_cartas_baraja[1].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+                pctbxs_cartas_baraja[1].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
+                contador_sumar(1);
+                pctbxs_cartas_baraja[2].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+                pctbxs_cartas_baraja[2].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
+                contador_cartas_boca_abajo--;
+
+                return true;
+            }
+            return false;
         }
 
         private async Task<Baraja> cargar_recursos()
@@ -177,7 +216,16 @@ namespace Solitario_proyecto
                 {
                     if (colocar_carta_caida(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida))
                     {
-                        revelar_carta_detras_arrastrada(carta_arrastrada);
+
+                        if (!generar_nuevo_pctbx_carta_baraja(picture_arrastrado, true))
+                        {
+                            revelar_carta_detras_arrastrada(carta_arrastrada);
+                        }
+                        else
+                        {
+                            picture_arrastrado.AllowDrop = true;
+                            picture_arrastrado.DragEnter += pctbx_boca_abajo_DragEnter;
+                        }
                         if (carta_arrastrada.CartasDependientes.Count != 0)
                         {
                             Carta carta_aux_arrastrada = carta_arrastrada;
@@ -190,6 +238,7 @@ namespace Solitario_proyecto
 
                     }
                 }
+                
             }
         }
 
@@ -738,17 +787,52 @@ namespace Solitario_proyecto
 
         private void pctbx_baraja_Click(object sender, EventArgs e)
         {
-            if (contador_cartas_boca_abajo == 24) contador_cartas_boca_abajo = 1;
-            pctbx_baraja_0.Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count) contador_cartas_boca_abajo = 1;
+            pctbxs_cartas_baraja[0].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+            pctbxs_cartas_baraja[0].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
             contador_cartas_boca_abajo++;
-            if (contador_cartas_boca_abajo == 24) contador_cartas_boca_abajo = 1;
-            pctbx_baraja_1.Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count) contador_cartas_boca_abajo = 1;
+            pctbxs_cartas_baraja[1].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+            pctbxs_cartas_baraja[1].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
             contador_cartas_boca_abajo++;
-            if (contador_cartas_boca_abajo == 24) contador_cartas_boca_abajo = 1;
-            pctbx_baraja_2.Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count) contador_cartas_boca_abajo = 1;
+            pctbxs_cartas_baraja[2].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
+            pctbxs_cartas_baraja[2].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
             contador_cartas_boca_abajo--;
         }
 
+        private int contador_sumar(int i)
+        {
+            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count)
+            {
+                contador_cartas_boca_abajo = 0;
+            }
+            contador_cartas_boca_abajo = contador_cartas_boca_abajo+i;
+            return contador_cartas_boca_abajo;
+        }
 
+        private int contador_restar(int i)
+        {
+            if(contador_cartas_boca_abajo == 0)
+            {
+                contador_cartas_boca_abajo = cartas.Cartas_boca_abajo.Count;
+            }
+            contador_cartas_boca_abajo = contador_cartas_boca_abajo - i;
+            return contador_cartas_boca_abajo;
+                
+        }
+
+        private int contador()
+        {
+            return contador_cartas_boca_abajo;
+        }
+
+        private void btn_Fin_Click(object sender, EventArgs e)
+        {
+            Fin form1 = new Fin(puntos,  min + ":" + seg, usuario_entrar);
+            Hide();
+            form1.ShowDialog();
+            Close();
+        }
     }
 }

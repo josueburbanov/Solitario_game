@@ -72,7 +72,7 @@ namespace Solitario_proyecto
         private async void btn_aceptar_Click(object sender, EventArgs e)
         {
             Usuario user = new Usuario { Nombre = tx_nombre.Text,
-                Nombre_usuario = tx_usuario.Text, Contrasenia = tx_nombre.Text,
+                Nombre_usuario = tx_usuario.Text, Contrasenia = tx_contra.Text,
                 Correo = tx_correo.Text };
             Usuario usuario_registrado = await registrar_usuario(user);
             if(usuario_registrado != null)
@@ -86,7 +86,7 @@ namespace Solitario_proyecto
                 lb_contra.Visible = false;
                 tx_contra.Visible = false;
                 btn_aceptar.Visible = false;
-                MessageBox.Show("Registro correcto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Registro correcto", "Correcto", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
