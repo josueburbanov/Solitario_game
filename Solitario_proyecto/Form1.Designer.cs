@@ -557,7 +557,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button1.Location = new System.Drawing.Point(-1, 0);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(82, 71);
+            this.button1.Size = new System.Drawing.Size(51, 31);
             this.button1.TabIndex = 45;
             this.button1.Text = "Iniciar";
             this.button1.UseVisualStyleBackColor = false;
@@ -567,9 +567,9 @@
             // 
             this.btn_Fin.BackColor = System.Drawing.Color.White;
             this.btn_Fin.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btn_Fin.Location = new System.Drawing.Point(0, 606);
+            this.btn_Fin.Location = new System.Drawing.Point(48, 0);
             this.btn_Fin.Name = "btn_Fin";
-            this.btn_Fin.Size = new System.Drawing.Size(82, 71);
+            this.btn_Fin.Size = new System.Drawing.Size(70, 31);
             this.btn_Fin.TabIndex = 46;
             this.btn_Fin.Text = "Terminar";
             this.btn_Fin.UseVisualStyleBackColor = false;
