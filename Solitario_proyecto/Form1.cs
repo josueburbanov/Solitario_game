@@ -518,7 +518,15 @@ namespace Solitario_proyecto
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            await iniciar_juego();
+            try
+            {
+                await iniciar_juego();
+            }
+            catch (Exception x)
+            {
+                Console.WriteLine(x.Message);
+            }
+            
 
         }
 
