@@ -27,7 +27,7 @@ namespace Solitario_proyecto
             Form1 form1 = new Form1(usuario_entrar);
             Hide();
             form1.ShowDialog();
-            Close();
+            Dispose();
         }
     }
 }
