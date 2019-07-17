@@ -26,12 +26,12 @@ namespace Solitario_proyecto
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            Form1 form1 = new Form1(usuario_entrar, this.form1.cartas_repo);
-            form1.ShowDialog();
-            form1.bandera_inicio = true;
-            await form1.iniciar_juego();
+            Form1 form = new Form1(usuario_entrar, form1.cartas_repo);
+            await form.iniciar_juego();
+            form.dificultad_facil = form1.dificultad_facil;
+            form.ShowDialog();
             Hide();
-            
+
         }
     }
 }

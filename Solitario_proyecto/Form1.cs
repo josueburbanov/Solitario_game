@@ -653,6 +653,7 @@ namespace Solitario_proyecto
                 //item.Imagen = null;
                 pctbx_espacio1.Image = Image.FromFile(rutaImagen);
                 pctbx_espacio1.Tag = item;
+                item.Boca_abajo = false;
             }
 
             for (int i = 0; i < cartas.Cartas_segundo_espacio.Count; i++)
@@ -674,6 +675,7 @@ namespace Solitario_proyecto
                 {
                     pctbx_espacio2_1.Image = Image.FromFile(rutaImagen);
                     pctbx_espacio2_1.Tag = cartas.Cartas_segundo_espacio[i];
+                    cartas.Cartas_segundo_espacio[i].Boca_abajo = false;
                 }
             }
 
@@ -702,6 +704,7 @@ namespace Solitario_proyecto
                 {
                     pctbx_espacio3_2.Image = Image.FromFile(rutaImagen);
                     pctbx_espacio3_2.Tag = cartas.Cartas_tercer_espacio[i];
+                    cartas.Cartas_tercer_espacio[i].Boca_abajo = false;
                 }
 
             }
@@ -737,6 +740,7 @@ namespace Solitario_proyecto
                 {
                     pctbx_espacio4_3.Image = Image.FromFile(rutaImagen);
                     pctbx_espacio4_3.Tag = cartas.Cartas_cuarto_espacio[i];
+                    cartas.Cartas_cuarto_espacio[i].Boca_abajo = false;
                 }
             }
 
@@ -777,6 +781,7 @@ namespace Solitario_proyecto
                 {
                     pctbx_espacio5_4.Image = Image.FromFile(rutaImagen);
                     pctbx_espacio5_4.Tag = cartas.Cartas_quinto_espacio[i];
+                    cartas.Cartas_quinto_espacio[i].Boca_abajo = false;
                 }
             }
 
@@ -823,6 +828,7 @@ namespace Solitario_proyecto
                 {
                     pctbx_espacio6_5.Image = Image.FromFile(rutaImagen);
                     pctbx_espacio6_5.Tag = cartas.Cartas_sexto_espacio[i];
+                    cartas.Cartas_sexto_espacio[i].Boca_abajo = false;
                 }
             }
 
@@ -875,6 +881,7 @@ namespace Solitario_proyecto
                 {
                     pctbx_espacio7_6.Image = Image.FromFile(rutaImagen);
                     pctbx_espacio7_6.Tag = cartas.Cartas_septimo_espacio[i];
+                    cartas.Cartas_septimo_espacio[i].Boca_abajo = false;
                 }
             }
             for (int i = 0; i < cartas.Cartas_boca_abajo.Count; i++)
@@ -968,14 +975,6 @@ namespace Solitario_proyecto
         private int contador()
         {
             return contador_cartas_boca_abajo;
-        }
-
-        private void btn_Fin_Click(object sender, EventArgs e)
-        {
-            Fin form1 = new Fin(puntos, min + ":" + seg, usuario_entrar, this);
-            Hide();
-            form1.ShowDialog();
-            Close();
         }
 
         private void iniciarToolStripMenuItem_Click(object sender, EventArgs e)
