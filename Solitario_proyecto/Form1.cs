@@ -25,7 +25,7 @@ namespace Solitario_proyecto
         string seg = "";
         Timer timer = new Timer { Interval = 1000 };
         List<PictureBox> pctbxs_cartas_baraja = new List<PictureBox>();
-        bool dificultad_facil = false;
+        public bool dificultad_facil = false;
         UltimoMovimiento ultimoMovimiento;
 
         private void Tick(object sender, EventArgs e)
@@ -624,7 +624,7 @@ namespace Solitario_proyecto
             if (cartas == null)
             {
                 cartas = await cargar_recursos();
-                cartas_repo = cartas;
+                cartas_repo = cartas.DeepCopy();
                 bandera_inicio = true;
             }
             else
@@ -995,6 +995,7 @@ namespace Solitario_proyecto
         {
             Form1 form1 = new Form1(usuario_entrar, cartas_repo);
             await form1.iniciar_juego();
+            form1.dificultad_facil = dificultad_facil;
             form1.ShowDialog();
             Hide();
         }
