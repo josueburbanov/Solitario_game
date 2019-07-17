@@ -14,7 +14,9 @@ namespace Solitario_proyecto
     public partial class Form1 : Form
     {
         Baraja cartas;
-        int contador_cartas_boca_abajo = 2;
+        Baraja cartas_repo;
+        public bool bandera_inicio;
+        int contador_cartas_boca_abajo = 1;
         int puntos = 0;
         Usuario usuario_entrar = new Usuario();
         int contador_seg = 0;
@@ -49,7 +51,6 @@ namespace Solitario_proyecto
             this.usuario_entrar = usuario_entrar;
             lb_usuario.Text = usuario_entrar.Nombre;
             timer.Tick += Tick;
-            
 
             //Cartas que arrancan con la posibilidad de ser caídas
             pctbx_espacio1.AllowDrop = true;
@@ -114,7 +115,7 @@ namespace Solitario_proyecto
                 Carta carta_caida = (Carta)picture_caido.Tag;
                 if (carta_arrastrada.Valor == 1)
                 {
-                    Guardar_ultimo_mov(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida,puntos);
+                    Guardar_ultimo_mov(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida, puntos);
                     picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
                     picture_arrastrado.BringToFront();
                     if (dificultad_facil)
@@ -132,7 +133,7 @@ namespace Solitario_proyecto
                     picture_arrastrado.AllowDrop = true;
                     picture_arrastrado.DragEnter += pctbx_deck_DragEnter;
                     if (!pctbxs_cartas_baraja.Contains(picture_arrastrado)) revelar_carta_detras_arrastrada(carta_arrastrada);
-                }                
+                }
             }
             else
             {
@@ -140,7 +141,7 @@ namespace Solitario_proyecto
                 Carta carta_caida = (Carta)picture_caido.Tag;
                 if (carta_arrastrada.Valor == carta_caida.Valor + 1 && carta_arrastrada.Palo.Equals(carta_caida.Palo))
                 {
-                    Guardar_ultimo_mov(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida,puntos);
+                    Guardar_ultimo_mov(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida, puntos);
                     picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
                     picture_arrastrado.BringToFront();
                     picture_arrastrado.AllowDrop = true;
@@ -170,7 +171,7 @@ namespace Solitario_proyecto
             {
                 puntos = 10;
             }
-            else if(puntos == 0)
+            else if (puntos == 0)
             {
                 puntos = 0;
             }
@@ -284,12 +285,11 @@ namespace Solitario_proyecto
                 if (!carta_arrastrada.Boca_abajo)
                 {
 
-                    if(picture_caido.Tag == null && carta_arrastrada.Valor == 13)
+                    if (picture_caido.Tag == null && carta_arrastrada.Valor == 13)
                     {
                         picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
                         picture_arrastrado.BringToFront();
                         revelar_carta_detras_arrastrada(carta_arrastrada);
-                        return;
                     }
                     if (colocar_carta_caida(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida))
                     {
@@ -328,7 +328,7 @@ namespace Solitario_proyecto
             {
                 colocar_carta_caida(buscar_picture_box(item), buscar_picture_box(carta_aux_arrastrada), item, carta_aux_arrastrada);
                 carta_aux_arrastrada = item;
-                if(item.CartasDependientes.Count != 0)
+                if (item.CartasDependientes.Count != 0)
                 {
                     colocar_cartas_dependientes(item);
                 }
@@ -559,6 +559,7 @@ namespace Solitario_proyecto
 
         private bool colocar_carta_caida(PictureBox picture_arrastrado, PictureBox picture_caido, Carta carta_arrastrada, Carta carta_caida)
         {
+            if (carta_arrastrada.Valor == 13 && picture_caido.Image == null) return true;
             if (carta_arrastrada.Valor + 1 == carta_caida.Valor && chequear_colores(carta_arrastrada, carta_caida))
             {
                 picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y + 20);
@@ -606,23 +607,40 @@ namespace Solitario_proyecto
                 }
             }
         }
-        
+
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            if(cartas == null)
+            if (cartas == null)
             {
                 await iniciar_juego();
             }
         }
 
 
-        private async Task iniciar_juego()
+        public async Task iniciar_juego()
         {
             timer.Start();
             if (cartas == null)
             {
                 cartas = await cargar_recursos();
+                cartas_repo = cartas;
+                bandera_inicio = true;
+            }
+            else
+            {
+                contador_min = 0;
+                contador_seg = 0;
+                bandera_inicio = false;
+                cartas = cartas_repo;
+                cartas.Cartas_boca_abajo.Shuffle();
+                cartas.Cartas_primer_espacio.Shuffle();
+                cartas.Cartas_segundo_espacio.Shuffle();
+                cartas.Cartas_tercer_espacio.Shuffle();
+                cartas.Cartas_cuarto_espacio.Shuffle();
+                cartas.Cartas_quinto_espacio.Shuffle();
+                cartas.Cartas_sexto_espacio.Shuffle();
+                cartas.Cartas_septimo_espacio.Shuffle();
             }
 
             foreach (var item in cartas.Cartas_primer_espacio)
@@ -630,7 +648,8 @@ namespace Solitario_proyecto
                 item.Simbolo = Regex.Replace(item.Simbolo, @"\s+", "");
                 item.Palo = Regex.Replace(item.Palo, @"\s+", "");
                 string rutaImagen = "..\\..\\Resources\\" + item.Simbolo + "_" + item.Palo + ".png";
-                File.WriteAllBytes(rutaImagen, item.Imagen);
+                if (bandera_inicio)
+                    File.WriteAllBytes(rutaImagen, item.Imagen);
                 item.Ruta_imagen = rutaImagen;
                 //item.Imagen = null;
                 pctbx_espacio1.Image = Image.FromFile(rutaImagen);
@@ -642,7 +661,8 @@ namespace Solitario_proyecto
                 cartas.Cartas_segundo_espacio[i].Simbolo = Regex.Replace(cartas.Cartas_segundo_espacio[i].Simbolo, @"\s+", "");
                 cartas.Cartas_segundo_espacio[i].Palo = Regex.Replace(cartas.Cartas_segundo_espacio[i].Palo, @"\s+", "");
                 string rutaImagen = "..\\..\\Resources\\" + cartas.Cartas_segundo_espacio[i].Simbolo + "_" + cartas.Cartas_segundo_espacio[i].Palo + ".png";
-                File.WriteAllBytes(rutaImagen, cartas.Cartas_segundo_espacio[i].Imagen);
+                if (bandera_inicio)
+                    File.WriteAllBytes(rutaImagen, cartas.Cartas_segundo_espacio[i].Imagen);
                 cartas.Cartas_segundo_espacio[i].Ruta_imagen = rutaImagen;
                 //item.Imagen = null;
                 if (i == 0)
@@ -663,7 +683,8 @@ namespace Solitario_proyecto
                 cartas.Cartas_tercer_espacio[i].Simbolo = Regex.Replace(cartas.Cartas_tercer_espacio[i].Simbolo, @"\s+", "");
                 cartas.Cartas_tercer_espacio[i].Palo = Regex.Replace(cartas.Cartas_tercer_espacio[i].Palo, @"\s+", "");
                 string rutaImagen = "..\\..\\Resources\\" + cartas.Cartas_tercer_espacio[i].Simbolo + "_" + cartas.Cartas_tercer_espacio[i].Palo + ".png";
-                File.WriteAllBytes(rutaImagen, cartas.Cartas_tercer_espacio[i].Imagen);
+                if (bandera_inicio)
+                    File.WriteAllBytes(rutaImagen, cartas.Cartas_tercer_espacio[i].Imagen);
                 cartas.Cartas_tercer_espacio[i].Ruta_imagen = rutaImagen;
                 //item.Imagen = null;
                 if (i == 0)
@@ -691,7 +712,8 @@ namespace Solitario_proyecto
                 cartas.Cartas_cuarto_espacio[i].Simbolo = Regex.Replace(cartas.Cartas_cuarto_espacio[i].Simbolo, @"\s+", "");
                 cartas.Cartas_cuarto_espacio[i].Palo = Regex.Replace(cartas.Cartas_cuarto_espacio[i].Palo, @"\s+", "");
                 string rutaImagen = "..\\..\\Resources\\" + cartas.Cartas_cuarto_espacio[i].Simbolo + "_" + cartas.Cartas_cuarto_espacio[i].Palo + ".png";
-                File.WriteAllBytes(rutaImagen, cartas.Cartas_cuarto_espacio[i].Imagen);
+                if (bandera_inicio)
+                    File.WriteAllBytes(rutaImagen, cartas.Cartas_cuarto_espacio[i].Imagen);
                 cartas.Cartas_cuarto_espacio[i].Ruta_imagen = rutaImagen;
                 //item.Imagen = null;
                 if (i == 0)
@@ -724,7 +746,8 @@ namespace Solitario_proyecto
                 cartas.Cartas_quinto_espacio[i].Simbolo = Regex.Replace(cartas.Cartas_quinto_espacio[i].Simbolo, @"\s+", "");
                 cartas.Cartas_quinto_espacio[i].Palo = Regex.Replace(cartas.Cartas_quinto_espacio[i].Palo, @"\s+", "");
                 string rutaImagen = "..\\..\\Resources\\" + cartas.Cartas_quinto_espacio[i].Simbolo + "_" + cartas.Cartas_quinto_espacio[i].Palo + ".png";
-                File.WriteAllBytes(rutaImagen, cartas.Cartas_quinto_espacio[i].Imagen);
+                if (bandera_inicio)
+                    File.WriteAllBytes(rutaImagen, cartas.Cartas_quinto_espacio[i].Imagen);
                 cartas.Cartas_quinto_espacio[i].Ruta_imagen = rutaImagen;
                 //item.Imagen = null;
                 if (i == 0)
@@ -763,7 +786,8 @@ namespace Solitario_proyecto
                 cartas.Cartas_sexto_espacio[i].Simbolo = Regex.Replace(cartas.Cartas_sexto_espacio[i].Simbolo, @"\s+", "");
                 cartas.Cartas_sexto_espacio[i].Palo = Regex.Replace(cartas.Cartas_sexto_espacio[i].Palo, @"\s+", "");
                 string rutaImagen = "..\\..\\Resources\\" + cartas.Cartas_sexto_espacio[i].Simbolo + "_" + cartas.Cartas_sexto_espacio[i].Palo + ".png";
-                File.WriteAllBytes(rutaImagen, cartas.Cartas_sexto_espacio[i].Imagen);
+                if (bandera_inicio)
+                    File.WriteAllBytes(rutaImagen, cartas.Cartas_sexto_espacio[i].Imagen);
                 cartas.Cartas_sexto_espacio[i].Ruta_imagen = rutaImagen;
                 //item.Imagen = null;
                 if (i == 0)
@@ -808,7 +832,8 @@ namespace Solitario_proyecto
                 cartas.Cartas_septimo_espacio[i].Simbolo = Regex.Replace(cartas.Cartas_septimo_espacio[i].Simbolo, @"\s+", "");
                 cartas.Cartas_septimo_espacio[i].Palo = Regex.Replace(cartas.Cartas_septimo_espacio[i].Palo, @"\s+", "");
                 string rutaImagen = "..\\..\\Resources\\" + cartas.Cartas_septimo_espacio[i].Simbolo + "_" + cartas.Cartas_septimo_espacio[i].Palo + ".png";
-                File.WriteAllBytes(rutaImagen, cartas.Cartas_septimo_espacio[i].Imagen);
+                if (bandera_inicio)
+                    File.WriteAllBytes(rutaImagen, cartas.Cartas_septimo_espacio[i].Imagen);
                 cartas.Cartas_septimo_espacio[i].Ruta_imagen = rutaImagen;
                 //item.Imagen = null;
                 if (i == 0)
@@ -858,7 +883,8 @@ namespace Solitario_proyecto
                 cartas.Cartas_boca_abajo[i].Simbolo = Regex.Replace(cartas.Cartas_boca_abajo[i].Simbolo, @"\s+", "");
                 cartas.Cartas_boca_abajo[i].Palo = Regex.Replace(cartas.Cartas_boca_abajo[i].Palo, @"\s+", "");
                 string rutaImagen = "..\\..\\Resources\\" + cartas.Cartas_boca_abajo[i].Simbolo + "_" + cartas.Cartas_boca_abajo[i].Palo + ".png";
-                File.WriteAllBytes(rutaImagen, cartas.Cartas_boca_abajo[i].Imagen);
+                if (bandera_inicio)
+                    File.WriteAllBytes(rutaImagen, cartas.Cartas_boca_abajo[i].Imagen);
                 cartas.Cartas_boca_abajo[i].Ruta_imagen = rutaImagen;
                 //item.Imagen = null;
                 if (i == 0)
@@ -883,7 +909,7 @@ namespace Solitario_proyecto
         {
             if (cartas == null)
             {
-                MessageBox.Show("Primero inicie el juego","Información",MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
+                MessageBox.Show("Primero inicie el juego", "Información", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -893,7 +919,7 @@ namespace Solitario_proyecto
             pctbxs_cartas_baraja[0].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
             contador_cartas_boca_abajo++;
             if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count)
-                contador_cartas_boca_abajo =0;
+                contador_cartas_boca_abajo = 0;
             pctbxs_cartas_baraja[1].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
             pctbxs_cartas_baraja[1].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
             contador_cartas_boca_abajo++;
@@ -901,8 +927,15 @@ namespace Solitario_proyecto
                 contador_cartas_boca_abajo = 0;
             pctbxs_cartas_baraja[2].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
             pctbxs_cartas_baraja[2].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
-            if(contador_cartas_boca_abajo != 0)
+            if (contador_cartas_boca_abajo != 0)
+            {
                 contador_cartas_boca_abajo--;
+            }
+            else
+            {
+                contador_cartas_boca_abajo = cartas.Cartas_boca_abajo.Count - 1;
+            }
+
         }
 
         private int contador_sumar(int i)
@@ -927,7 +960,7 @@ namespace Solitario_proyecto
             else
             {
                 contador_cartas_boca_abajo = contador_cartas_boca_abajo - i;
-            }            
+            }
             return contador_cartas_boca_abajo;
 
         }
@@ -939,44 +972,31 @@ namespace Solitario_proyecto
 
         private void btn_Fin_Click(object sender, EventArgs e)
         {
-            Fin form1 = new Fin(puntos, min + ":" + seg, usuario_entrar);
+            Fin form1 = new Fin(puntos, min + ":" + seg, usuario_entrar, this);
             Hide();
             form1.ShowDialog();
-            Dispose();
         }
 
         private void iniciarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-                 
+
         }
 
         private void terminarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Fin form1 = new Fin(puntos, min + ":" + seg, usuario_entrar);
+            Fin form1 = new Fin(puntos, min + ":" + seg, usuario_entrar, this);
             Hide();
             form1.ShowDialog();
-            Dispose();
         }
 
         private async void reiniciarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (cartas == null)
-            {
-                cartas = await barajar_cartas();
-                await iniciar_juego();
-                contador_seg = 0;
-                contador_min = 0;
-            }
-            else
-            {
-                cartas = null;
-                await iniciar_juego();
-            }
+            await iniciar_juego();
         }
 
         private async void fácilToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dificultad_facil = true;
+            bandera_inicio = true;
             lb_dificultad.Text = "Fácil";
             if (cartas == null)
             {
@@ -986,11 +1006,10 @@ namespace Solitario_proyecto
 
         private async void difícilToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dificultad_facil = false;
             lb_dificultad.Text = "Difícil";
             if (cartas == null)
             {
-                await iniciar_juego();
+                iniciar_juego();
             }
         }
 
@@ -998,7 +1017,7 @@ namespace Solitario_proyecto
         {
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.Z)
             {
-                if(ultimoMovimiento != null)
+                if (ultimoMovimiento != null)
                 {
                     DialogResult respuesta = MessageBox.Show("¿Seguro de deshacer movimiento?", "Deshacer", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                     if (respuesta == DialogResult.OK)
@@ -1006,9 +1025,9 @@ namespace Solitario_proyecto
 
                     }
                 }
-                
+
             }
-                
+
         }
 
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)

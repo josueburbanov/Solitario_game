@@ -73,10 +73,10 @@
             this.pctbx_baraja_2 = new System.Windows.Forms.PictureBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.iniciarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reiniciarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.terminarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fácilToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.difícilToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reiniciarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.terminarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lb_dificultad = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deshacerMovimientoCtrlZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -583,20 +583,6 @@
             this.iniciarToolStripMenuItem.Text = "Iniciar";
             this.iniciarToolStripMenuItem.Click += new System.EventHandler(this.iniciarToolStripMenuItem_Click);
             // 
-            // reiniciarToolStripMenuItem
-            // 
-            this.reiniciarToolStripMenuItem.Name = "reiniciarToolStripMenuItem";
-            this.reiniciarToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
-            this.reiniciarToolStripMenuItem.Text = "Reiniciar";
-            this.reiniciarToolStripMenuItem.Click += new System.EventHandler(this.reiniciarToolStripMenuItem_Click);
-            // 
-            // terminarToolStripMenuItem
-            // 
-            this.terminarToolStripMenuItem.Name = "terminarToolStripMenuItem";
-            this.terminarToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
-            this.terminarToolStripMenuItem.Text = "Terminar";
-            this.terminarToolStripMenuItem.Click += new System.EventHandler(this.terminarToolStripMenuItem_Click);
-            // 
             // fácilToolStripMenuItem
             // 
             this.fácilToolStripMenuItem.Name = "fácilToolStripMenuItem";
@@ -610,6 +596,20 @@
             this.difícilToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.difícilToolStripMenuItem.Text = "Difícil";
             this.difícilToolStripMenuItem.Click += new System.EventHandler(this.difícilToolStripMenuItem_Click);
+            // 
+            // reiniciarToolStripMenuItem
+            // 
+            this.reiniciarToolStripMenuItem.Name = "reiniciarToolStripMenuItem";
+            this.reiniciarToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
+            this.reiniciarToolStripMenuItem.Text = "Reiniciar";
+            this.reiniciarToolStripMenuItem.Click += new System.EventHandler(this.reiniciarToolStripMenuItem_Click);
+            // 
+            // terminarToolStripMenuItem
+            // 
+            this.terminarToolStripMenuItem.Name = "terminarToolStripMenuItem";
+            this.terminarToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
+            this.terminarToolStripMenuItem.Text = "Terminar";
+            this.terminarToolStripMenuItem.Click += new System.EventHandler(this.terminarToolStripMenuItem_Click);
             // 
             // lb_dificultad
             // 
@@ -628,7 +628,7 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deshacerMovimientoCtrlZToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(233, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(233, 26);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // deshacerMovimientoCtrlZToolStripMenuItem
@@ -642,12 +642,12 @@
             // 
             // Form1
             // 
-            this.ContextMenuStrip = contextMenuStrip1;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Solitario_proyecto.Properties.Resources.back1;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1297, 676);
+            this.ContextMenuStrip = this.contextMenuStrip1;
             this.Controls.Add(this.lb_dificultad);
             this.Controls.Add(this.pctbx_baraja_2);
             this.Controls.Add(this.pctbx_baraja_1);
