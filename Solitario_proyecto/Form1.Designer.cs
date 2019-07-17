@@ -70,8 +70,12 @@
             this.pctbx_espacio7_6 = new System.Windows.Forms.PictureBox();
             this.pctbx_baraja_1 = new System.Windows.Forms.PictureBox();
             this.pctbx_baraja_2 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.btn_Fin = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.iniciarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reiniciarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.terminarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fácilToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.difícilToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_deck1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio1)).BeginInit();
@@ -108,6 +112,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio7_6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_2)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pctbx_baraja_0
@@ -549,31 +554,57 @@
             this.pctbx_baraja_2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pctbx_baraja_2.TabIndex = 44;
             this.pctbx_baraja_2.TabStop = false;
-            this.pctbx_baraja_2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pctbx_baraja_2_MouseDown);
+            this.pctbx_baraja_2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pctbx_baraja_0_MouseDown);
             // 
-            // button1
+            // menuStrip1
             // 
-            this.button1.BackColor = System.Drawing.Color.White;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button1.Location = new System.Drawing.Point(-1, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(51, 31);
-            this.button1.TabIndex = 45;
-            this.button1.Text = "Iniciar";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.iniciarToolStripMenuItem,
+            this.reiniciarToolStripMenuItem,
+            this.terminarToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1297, 24);
+            this.menuStrip1.TabIndex = 48;
+            this.menuStrip1.Text = "menuStrip1";
             // 
-            // btn_Fin
+            // iniciarToolStripMenuItem
             // 
-            this.btn_Fin.BackColor = System.Drawing.Color.White;
-            this.btn_Fin.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btn_Fin.Location = new System.Drawing.Point(48, 0);
-            this.btn_Fin.Name = "btn_Fin";
-            this.btn_Fin.Size = new System.Drawing.Size(70, 31);
-            this.btn_Fin.TabIndex = 46;
-            this.btn_Fin.Text = "Terminar";
-            this.btn_Fin.UseVisualStyleBackColor = false;
-            this.btn_Fin.Click += new System.EventHandler(this.btn_Fin_Click);
+            this.iniciarToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fácilToolStripMenuItem,
+            this.difícilToolStripMenuItem});
+            this.iniciarToolStripMenuItem.Name = "iniciarToolStripMenuItem";
+            this.iniciarToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
+            this.iniciarToolStripMenuItem.Text = "Iniciar";
+            this.iniciarToolStripMenuItem.Click += new System.EventHandler(this.iniciarToolStripMenuItem_Click);
+            // 
+            // reiniciarToolStripMenuItem
+            // 
+            this.reiniciarToolStripMenuItem.Name = "reiniciarToolStripMenuItem";
+            this.reiniciarToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
+            this.reiniciarToolStripMenuItem.Text = "Reiniciar";
+            this.reiniciarToolStripMenuItem.Click += new System.EventHandler(this.reiniciarToolStripMenuItem_Click);
+            // 
+            // terminarToolStripMenuItem
+            // 
+            this.terminarToolStripMenuItem.Name = "terminarToolStripMenuItem";
+            this.terminarToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
+            this.terminarToolStripMenuItem.Text = "Terminar";
+            this.terminarToolStripMenuItem.Click += new System.EventHandler(this.terminarToolStripMenuItem_Click);
+            // 
+            // fácilToolStripMenuItem
+            // 
+            this.fácilToolStripMenuItem.Name = "fácilToolStripMenuItem";
+            this.fácilToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.fácilToolStripMenuItem.Text = "Fácil";
+            this.fácilToolStripMenuItem.Click += new System.EventHandler(this.fácilToolStripMenuItem_Click);
+            // 
+            // difícilToolStripMenuItem
+            // 
+            this.difícilToolStripMenuItem.Name = "difícilToolStripMenuItem";
+            this.difícilToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.difícilToolStripMenuItem.Text = "Difícil";
+            this.difícilToolStripMenuItem.Click += new System.EventHandler(this.difícilToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -582,8 +613,6 @@
             this.BackgroundImage = global::Solitario_proyecto.Properties.Resources.back1;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1297, 676);
-            this.Controls.Add(this.btn_Fin);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.pctbx_baraja_2);
             this.Controls.Add(this.pctbx_baraja_1);
             this.Controls.Add(this.pctbx_espacio7_6);
@@ -626,7 +655,9 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pctbx_baraja_0);
+            this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Roboto", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -668,6 +699,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio7_6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_2)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -717,8 +750,12 @@
         private System.Windows.Forms.PictureBox pctbx_espacio7_6;
         private System.Windows.Forms.PictureBox pctbx_baraja_1;
         private System.Windows.Forms.PictureBox pctbx_baraja_2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button btn_Fin;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem iniciarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reiniciarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem terminarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fácilToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem difícilToolStripMenuItem;
     }
 }
 

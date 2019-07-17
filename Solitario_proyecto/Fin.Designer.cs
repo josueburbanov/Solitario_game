@@ -54,7 +54,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Sitka Banner", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(281, 307);
+            this.label2.Location = new System.Drawing.Point(281, 309);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(119, 47);
             this.label2.TabIndex = 1;
@@ -66,7 +66,7 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Sitka Banner", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(281, 345);
+            this.label3.Location = new System.Drawing.Point(281, 354);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(130, 47);
             this.label3.TabIndex = 2;
@@ -78,7 +78,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Sitka Banner", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(329, 406);
+            this.button1.Location = new System.Drawing.Point(329, 419);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(137, 32);
             this.button1.TabIndex = 3;
@@ -92,7 +92,7 @@
             this.lb_puntos.BackColor = System.Drawing.Color.Transparent;
             this.lb_puntos.Font = new System.Drawing.Font("Sitka Banner", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb_puntos.ForeColor = System.Drawing.Color.White;
-            this.lb_puntos.Location = new System.Drawing.Point(405, 307);
+            this.lb_puntos.Location = new System.Drawing.Point(405, 309);
             this.lb_puntos.Name = "lb_puntos";
             this.lb_puntos.Size = new System.Drawing.Size(119, 47);
             this.lb_puntos.TabIndex = 4;
@@ -104,7 +104,7 @@
             this.lb_tiempo.BackColor = System.Drawing.Color.Transparent;
             this.lb_tiempo.Font = new System.Drawing.Font("Sitka Banner", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb_tiempo.ForeColor = System.Drawing.Color.White;
-            this.lb_tiempo.Location = new System.Drawing.Point(406, 345);
+            this.lb_tiempo.Location = new System.Drawing.Point(406, 354);
             this.lb_tiempo.Name = "lb_tiempo";
             this.lb_tiempo.Size = new System.Drawing.Size(130, 47);
             this.lb_tiempo.TabIndex = 5;
@@ -116,7 +116,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Solitario_proyecto.Properties.Resources.back;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(798, 463);
             this.Controls.Add(this.lb_tiempo);
             this.Controls.Add(this.lb_puntos);
             this.Controls.Add(this.button1);

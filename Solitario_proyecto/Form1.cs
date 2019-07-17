@@ -2,12 +2,9 @@
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,7 +13,7 @@ namespace Solitario_proyecto
 {
     public partial class Form1 : Form
     {
-        Baraja cartas = new Baraja();
+        Baraja cartas;
         int contador_cartas_boca_abajo = 2;
         int puntos = 0;
         Usuario usuario_entrar = new Usuario();
@@ -26,6 +23,7 @@ namespace Solitario_proyecto
         string seg = "";
         Timer timer = new Timer { Interval = 1000 };
         List<PictureBox> pctbxs_cartas_baraja = new List<PictureBox>();
+        bool dificultad_facil = false;
 
         private void Tick(object sender, EventArgs e)
         {
@@ -51,8 +49,6 @@ namespace Solitario_proyecto
             lb_usuario.Text = usuario_entrar.Nombre;
             timer.Tick += Tick;
             timer.Start();
-
-
 
             //Cartas que arrancan con la posibilidad de ser caídas
             pctbx_espacio1.AllowDrop = true;
@@ -122,6 +118,10 @@ namespace Solitario_proyecto
                     puntos += 10;
                     lb_puntos.Text = puntos.ToString();
                     carta_movida = true;
+                    picture_arrastrado.MouseDown -= new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                    picture_arrastrado.AllowDrop = true;
+                    picture_arrastrado.DragEnter += pctbx_deck_DragEnter;
+                    if (!pctbxs_cartas_baraja.Contains(picture_arrastrado)) revelar_carta_detras_arrastrada(carta_arrastrada);
                 }
             }
             else
@@ -134,10 +134,11 @@ namespace Solitario_proyecto
                     picture_arrastrado.BringToFront();
                     picture_arrastrado.AllowDrop = true;
                     picture_arrastrado.DragEnter += pctbx_deck_DragEnter;
-                    revelar_carta_detras_arrastrada(carta_arrastrada);
+                    if (!pctbxs_cartas_baraja.Contains(picture_arrastrado)) revelar_carta_detras_arrastrada(carta_arrastrada);
                     puntos += 10;
                     lb_puntos.Text = puntos.ToString();
                     carta_movida = true;
+                    picture_arrastrado.MouseDown -= new MouseEventHandler(pctbx_baraja_0_MouseDown);                    
                 }
             }
 
@@ -168,7 +169,8 @@ namespace Solitario_proyecto
                 pctbxs_cartas_baraja.Remove(picture_arrastrado);
                 pctbxs_cartas_baraja.Add(picture_box_nuevo);
 
-                contador_restar(2);
+                contador_restar(1);
+                contador_restar(1);
                 pctbxs_cartas_baraja[0].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
                 pctbxs_cartas_baraja[0].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
                 contador_sumar(1);
@@ -177,7 +179,7 @@ namespace Solitario_proyecto
                 contador_sumar(1);
                 pctbxs_cartas_baraja[2].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
                 pctbxs_cartas_baraja[2].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
-                contador_cartas_boca_abajo--;
+                contador_restar(1);
 
                 return true;
             }
@@ -189,6 +191,22 @@ namespace Solitario_proyecto
             RestClient cliente = new RestClient("http://localhost:29485/Service1.svc");
             var solicitud = new RestRequest(Method.GET);
             solicitud.Resource = "/colocar_cartas";
+            solicitud.RequestFormat = DataFormat.Json;
+            var respuesta = await cliente.ExecuteTaskAsync(solicitud);
+            var contenidoRespuesta = respuesta.Content;
+            if (!respuesta.IsSuccessful)
+            {
+                return null;
+            }
+            return JsonConvert.DeserializeObject<Baraja>(contenidoRespuesta);
+
+        }
+
+        private async Task<Baraja> barajar_cartas()
+        {
+            RestClient cliente = new RestClient("http://localhost:29485/Service1.svc");
+            var solicitud = new RestRequest(Method.GET);
+            solicitud.Resource = "/barajar_cartas";
             solicitud.RequestFormat = DataFormat.Json;
             var respuesta = await cliente.ExecuteTaskAsync(solicitud);
             var contenidoRespuesta = respuesta.Content;
@@ -214,6 +232,14 @@ namespace Solitario_proyecto
 
                 if (!carta_arrastrada.Boca_abajo)
                 {
+
+                    if(picture_caido.Tag == null && carta_arrastrada.Valor == 13)
+                    {
+                        picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
+                        picture_arrastrado.BringToFront();
+                        revelar_carta_detras_arrastrada(carta_arrastrada);
+                        return;
+                    }
                     if (colocar_carta_caida(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida))
                     {
 
@@ -225,21 +251,45 @@ namespace Solitario_proyecto
                         {
                             picture_arrastrado.AllowDrop = true;
                             picture_arrastrado.DragEnter += pctbx_boca_abajo_DragEnter;
+                            carta_arrastrada.Boca_abajo = false;
+                            picture_arrastrado.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
                         }
                         if (carta_arrastrada.CartasDependientes.Count != 0)
                         {
-                            Carta carta_aux_arrastrada = carta_arrastrada;
-                            foreach (var item in carta_arrastrada.CartasDependientes)
-                            {
-                                colocar_carta_caida(buscar_picture_box(item), buscar_picture_box(carta_aux_arrastrada), item, carta_aux_arrastrada);
-                                carta_aux_arrastrada = item;
-                            }
+                            colocar_cartas_dependientes(carta_arrastrada);
                         }
 
                     }
                 }
-                
+
             }
+        }
+
+        private void colocar_cartas_dependientes(Carta carta_arrastrada)
+        {
+            Carta carta_aux_arrastrada = carta_arrastrada;
+            foreach (var item in carta_arrastrada.CartasDependientes)
+            {
+                colocar_carta_caida(buscar_picture_box(item), buscar_picture_box(carta_aux_arrastrada), item, carta_aux_arrastrada);
+                carta_aux_arrastrada = item;
+                if(item.CartasDependientes.Count != 0)
+                {
+                    colocar_cartas_dependientes(item);
+                }
+            }
+        }
+
+        private List<Carta> buscar_lista(Carta carta_caida)
+        {
+            if (cartas.Cartas_primer_espacio.Contains(carta_caida)) return cartas.Cartas_primer_espacio;
+            if (cartas.Cartas_segundo_espacio.Contains(carta_caida)) return cartas.Cartas_segundo_espacio;
+            if (cartas.Cartas_tercer_espacio.Contains(carta_caida)) return cartas.Cartas_tercer_espacio;
+            if (cartas.Cartas_cuarto_espacio.Contains(carta_caida)) return cartas.Cartas_cuarto_espacio;
+            if (cartas.Cartas_quinto_espacio.Contains(carta_caida)) return cartas.Cartas_quinto_espacio;
+            if (cartas.Cartas_sexto_espacio.Contains(carta_caida)) return cartas.Cartas_sexto_espacio;
+            if (cartas.Cartas_septimo_espacio.Contains(carta_caida)) return cartas.Cartas_septimo_espacio;
+            return null;
+
         }
 
         private void revelar_carta_detras_arrastrada(Carta carta_arrastrada)
@@ -270,8 +320,10 @@ namespace Solitario_proyecto
                     picture_box_vacio.Size = new Size(94, 132);
                     picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
                     picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
-                    picture_box_vacio.TabIndex = 8;
-                    picture_box_vacio.TabStop = false;
+                    picture_box_vacio.AllowDrop = true;
+                    picture_box_vacio.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_box_vacio.BackColor = Color.Transparent;
+                    Controls.Add(picture_box_vacio);
                 }
             }
             else if (cartas.Cartas_segundo_espacio.Contains(carta_arrastrada))
@@ -297,8 +349,10 @@ namespace Solitario_proyecto
                     picture_box_vacio.Size = new Size(94, 132);
                     picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
                     picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
-                    picture_box_vacio.TabIndex = 9;
-                    picture_box_vacio.TabStop = false;
+                    picture_box_vacio.AllowDrop = true;
+                    picture_box_vacio.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_box_vacio.BackColor = Color.Transparent;
+                    Controls.Add(picture_box_vacio);
                 }
             }
             else if (cartas.Cartas_tercer_espacio.Contains(carta_arrastrada))
@@ -324,8 +378,10 @@ namespace Solitario_proyecto
                     picture_box_vacio.Size = new Size(94, 132);
                     picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
                     picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
-                    picture_box_vacio.TabIndex = 9;
-                    picture_box_vacio.TabStop = false;
+                    picture_box_vacio.AllowDrop = true;
+                    picture_box_vacio.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_box_vacio.BackColor = Color.Transparent;
+                    Controls.Add(picture_box_vacio);
                 }
             }
             else if (cartas.Cartas_cuarto_espacio.Contains(carta_arrastrada))
@@ -351,8 +407,10 @@ namespace Solitario_proyecto
                     picture_box_vacio.Size = new Size(94, 132);
                     picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
                     picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
-                    picture_box_vacio.TabIndex = 9;
-                    picture_box_vacio.TabStop = false;
+                    picture_box_vacio.AllowDrop = true;
+                    picture_box_vacio.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_box_vacio.BackColor = Color.Transparent;
+                    Controls.Add(picture_box_vacio);
                 }
             }
             else if (cartas.Cartas_quinto_espacio.Contains(carta_arrastrada))
@@ -378,8 +436,10 @@ namespace Solitario_proyecto
                     picture_box_vacio.Size = new Size(94, 132);
                     picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
                     picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
-                    picture_box_vacio.TabIndex = 9;
-                    picture_box_vacio.TabStop = false;
+                    picture_box_vacio.AllowDrop = true;
+                    picture_box_vacio.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_box_vacio.BackColor = Color.Transparent;
+                    Controls.Add(picture_box_vacio);
                 }
             }
             else if (cartas.Cartas_sexto_espacio.Contains(carta_arrastrada))
@@ -405,8 +465,10 @@ namespace Solitario_proyecto
                     picture_box_vacio.Size = new Size(94, 132);
                     picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
                     picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
-                    picture_box_vacio.TabIndex = 9;
-                    picture_box_vacio.TabStop = false;
+                    picture_box_vacio.AllowDrop = true;
+                    picture_box_vacio.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_box_vacio.BackColor = Color.Transparent;
+                    Controls.Add(picture_box_vacio);
                 }
             }
             else if (cartas.Cartas_septimo_espacio.Contains(carta_arrastrada))
@@ -432,8 +494,10 @@ namespace Solitario_proyecto
                     picture_box_vacio.Size = new Size(94, 132);
                     picture_box_vacio.SizeMode = PictureBoxSizeMode.StretchImage;
                     picture_box_vacio.BorderStyle = BorderStyle.Fixed3D;
-                    picture_box_vacio.TabIndex = 9;
-                    picture_box_vacio.TabStop = false;
+                    picture_box_vacio.AllowDrop = true;
+                    picture_box_vacio.DragEnter += pctbx_boca_abajo_DragEnter;
+                    picture_box_vacio.BackColor = Color.Transparent;
+                    Controls.Add(picture_box_vacio);
                 }
             }
         }
@@ -467,6 +531,7 @@ namespace Solitario_proyecto
 
         private bool chequear_colores(Carta carta_arrastrada, Carta carta_caida)
         {
+            if (dificultad_facil) return true;
             bool comparacion = false;
             if (carta_arrastrada.Palo == "corazones")
             {
@@ -484,7 +549,7 @@ namespace Solitario_proyecto
             {
                 comparacion = carta_caida.Palo == "treboles" || carta_caida.Palo == "negros";
             }
-            return true;
+            return comparacion;
         }
 
         private void pctbx_baraja_0_MouseDown(object sender, MouseEventArgs e)
@@ -499,44 +564,22 @@ namespace Solitario_proyecto
                 }
             }
         }
-        private void pctbx_baraja_2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                var img = sender as PictureBox;
-                if (img == null) return;
-                if (DoDragDrop(img, DragDropEffects.Move) == DragDropEffects.Move)
-                {
-                    img.Image = null;
-                }
-            }
-        }
-
-
-
-
+        
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            try
+            if(cartas == null)
             {
                 await iniciar_juego();
             }
-            catch (Exception x)
-            {
-                Console.WriteLine(x.Message);
-            }
-            
-
         }
+
 
         private async Task iniciar_juego()
         {
-            cartas = await cargar_recursos();
-            foreach (var item in cartas.Cartas_total)
+            if(cartas == null)
             {
-                File.WriteAllBytes("/Resources", item.Imagen);
-                item.Imagen = null;
+                cartas = await cargar_recursos();
             }
 
             foreach (var item in cartas.Cartas_primer_espacio)
@@ -795,18 +838,28 @@ namespace Solitario_proyecto
 
         private void pctbx_baraja_Click(object sender, EventArgs e)
         {
-            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count) contador_cartas_boca_abajo = 1;
+            if (cartas == null)
+            {
+                MessageBox.Show("Primero inicie el juego","Información",MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count)
+                contador_cartas_boca_abajo = 0;
             pctbxs_cartas_baraja[0].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
             pctbxs_cartas_baraja[0].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
             contador_cartas_boca_abajo++;
-            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count) contador_cartas_boca_abajo = 1;
+            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count)
+                contador_cartas_boca_abajo =0;
             pctbxs_cartas_baraja[1].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
             pctbxs_cartas_baraja[1].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
             contador_cartas_boca_abajo++;
-            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count) contador_cartas_boca_abajo = 1;
+            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count)
+                contador_cartas_boca_abajo = 0;
             pctbxs_cartas_baraja[2].Image = Image.FromFile(cartas.Cartas_boca_abajo[contador_cartas_boca_abajo].Ruta_imagen);
             pctbxs_cartas_baraja[2].Tag = cartas.Cartas_boca_abajo[contador_cartas_boca_abajo];
-            contador_cartas_boca_abajo--;
+            if(contador_cartas_boca_abajo != 0)
+                contador_cartas_boca_abajo--;
         }
 
         private int contador_sumar(int i)
@@ -815,19 +868,25 @@ namespace Solitario_proyecto
             {
                 contador_cartas_boca_abajo = 0;
             }
-            contador_cartas_boca_abajo = contador_cartas_boca_abajo+i;
+            else
+            {
+                contador_cartas_boca_abajo = contador_cartas_boca_abajo + i;
+            }
             return contador_cartas_boca_abajo;
         }
 
         private int contador_restar(int i)
         {
-            if(contador_cartas_boca_abajo == 0)
+            if (contador_cartas_boca_abajo == 0)
             {
                 contador_cartas_boca_abajo = cartas.Cartas_boca_abajo.Count;
             }
-            contador_cartas_boca_abajo = contador_cartas_boca_abajo - i;
+            else
+            {
+                contador_cartas_boca_abajo = contador_cartas_boca_abajo - i;
+            }            
             return contador_cartas_boca_abajo;
-                
+
         }
 
         private int contador()
@@ -837,10 +896,55 @@ namespace Solitario_proyecto
 
         private void btn_Fin_Click(object sender, EventArgs e)
         {
-            Fin form1 = new Fin(puntos,  min + ":" + seg, usuario_entrar);
+            Fin form1 = new Fin(puntos, min + ":" + seg, usuario_entrar);
             Hide();
             form1.ShowDialog();
-            Close();
+            Dispose();
+        }
+
+        private async void iniciarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+                 
+        }
+
+        private void terminarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Fin form1 = new Fin(puntos, min + ":" + seg, usuario_entrar);
+            Hide();
+            form1.ShowDialog();
+            Dispose();
+        }
+
+        private async void reiniciarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (cartas == null)
+            {
+                cartas = await barajar_cartas();
+                await iniciar_juego();
+            }
+            else
+            {
+                cartas = null;
+                await iniciar_juego();
+            }
+        }
+
+        private async void fácilToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dificultad_facil = true;
+            if (cartas == null)
+            {
+                await iniciar_juego();
+            }
+        }
+
+        private async void difícilToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dificultad_facil = false;
+            if (cartas == null)
+            {
+                await iniciar_juego();
+            }
         }
     }
 }
