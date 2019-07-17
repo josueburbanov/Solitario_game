@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UltimoMovimiento.cs" />
     <Compile Include="Usuario.cs" />
     <EmbeddedResource Include="Fin.resx">
       <DependentUpon>Fin.cs</DependentUpon>

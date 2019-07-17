@@ -24,6 +24,7 @@ namespace Solitario_proyecto
         Timer timer = new Timer { Interval = 1000 };
         List<PictureBox> pctbxs_cartas_baraja = new List<PictureBox>();
         bool dificultad_facil = false;
+        UltimoMovimiento ultimoMovimiento;
 
         private void Tick(object sender, EventArgs e)
         {
@@ -48,7 +49,7 @@ namespace Solitario_proyecto
             this.usuario_entrar = usuario_entrar;
             lb_usuario.Text = usuario_entrar.Nombre;
             timer.Tick += Tick;
-            timer.Start();
+            
 
             //Cartas que arrancan con la posibilidad de ser caídas
             pctbx_espacio1.AllowDrop = true;
@@ -113,16 +114,25 @@ namespace Solitario_proyecto
                 Carta carta_caida = (Carta)picture_caido.Tag;
                 if (carta_arrastrada.Valor == 1)
                 {
+                    Guardar_ultimo_mov(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida,puntos);
                     picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
                     picture_arrastrado.BringToFront();
-                    puntos += 10;
+                    if (dificultad_facil)
+                    {
+                        puntos += 10;
+                    }
+                    else
+                    {
+                        puntos += 20;
+                    }
+
                     lb_puntos.Text = puntos.ToString();
                     carta_movida = true;
                     picture_arrastrado.MouseDown -= new MouseEventHandler(pctbx_baraja_0_MouseDown);
                     picture_arrastrado.AllowDrop = true;
                     picture_arrastrado.DragEnter += pctbx_deck_DragEnter;
                     if (!pctbxs_cartas_baraja.Contains(picture_arrastrado)) revelar_carta_detras_arrastrada(carta_arrastrada);
-                }
+                }                
             }
             else
             {
@@ -130,20 +140,61 @@ namespace Solitario_proyecto
                 Carta carta_caida = (Carta)picture_caido.Tag;
                 if (carta_arrastrada.Valor == carta_caida.Valor + 1 && carta_arrastrada.Palo.Equals(carta_caida.Palo))
                 {
+                    Guardar_ultimo_mov(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida,puntos);
                     picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
                     picture_arrastrado.BringToFront();
                     picture_arrastrado.AllowDrop = true;
                     picture_arrastrado.DragEnter += pctbx_deck_DragEnter;
                     if (!pctbxs_cartas_baraja.Contains(picture_arrastrado)) revelar_carta_detras_arrastrada(carta_arrastrada);
-                    puntos += 10;
+                    if (dificultad_facil)
+                    {
+                        puntos += 10;
+                    }
+                    else
+                    {
+                        puntos += 20;
+                    }
                     lb_puntos.Text = puntos.ToString();
                     carta_movida = true;
-                    picture_arrastrado.MouseDown -= new MouseEventHandler(pctbx_baraja_0_MouseDown);                    
+                    picture_arrastrado.MouseDown -= new MouseEventHandler(pctbx_baraja_0_MouseDown);
                 }
             }
 
             generar_nuevo_pctbx_carta_baraja(picture_arrastrado, carta_movida);
 
+        }
+
+        private void Guardar_ultimo_mov(PictureBox picture_arrastrado, PictureBox picture_caido, Carta carta_arrastrada, Carta carta_caida, int puntos)
+        {
+            if (dificultad_facil)
+            {
+                puntos = 10;
+            }
+            else if(puntos == 0)
+            {
+                puntos = 0;
+            }
+            else
+            {
+                puntos = 20;
+            }
+            ultimoMovimiento = new UltimoMovimiento(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida, puntos);
+            picture_arrastrado.Location = new Point(picture_arrastrado.Location.X, picture_arrastrado.Location.Y);
+            picture_arrastrado.BringToFront();
+            if (dificultad_facil)
+            {
+                puntos -= 10;
+            }
+            else
+            {
+                puntos -= 20;
+            }
+
+            lb_puntos.Text = puntos.ToString();
+            picture_arrastrado.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+            picture_arrastrado.AllowDrop = false;
+            picture_arrastrado.DragEnter -= pctbx_deck_DragEnter;
+            if (!pctbxs_cartas_baraja.Contains(picture_arrastrado)) revelar_carta_detras_arrastrada(carta_arrastrada);
         }
 
         private bool generar_nuevo_pctbx_carta_baraja(PictureBox picture_arrastrado, bool carta_movida)
@@ -258,6 +309,11 @@ namespace Solitario_proyecto
                         {
                             colocar_cartas_dependientes(carta_arrastrada);
                         }
+                        ultimoMovimiento.carta_arrastrada = carta_arrastrada;
+                        ultimoMovimiento.carta_caida = carta_caida;
+                        ultimoMovimiento.picture_arrastrado = picture_arrastrado;
+                        ultimoMovimiento.picture_caido = picture_caido;
+                        ultimoMovimiento.puntos = 0;
 
                     }
                 }
@@ -298,8 +354,6 @@ namespace Solitario_proyecto
             if (cartas.Cartas_primer_espacio.Contains(carta_arrastrada))
             {
                 cartas.Cartas_primer_espacio.Remove(carta_arrastrada);
-                if (carta_arrastrada.CartasDependientes.Count != 0)
-                    cartas.Cartas_primer_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
 
                 if (cartas.Cartas_primer_espacio.Count != 0)
                 {
@@ -329,8 +383,6 @@ namespace Solitario_proyecto
             else if (cartas.Cartas_segundo_espacio.Contains(carta_arrastrada))
             {
                 cartas.Cartas_segundo_espacio.Remove(carta_arrastrada);
-                if (carta_arrastrada.CartasDependientes.Count != 0)
-                    cartas.Cartas_segundo_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
                 if (cartas.Cartas_segundo_espacio.Count != 0)
                 {
                     picture_carta_detras = buscar_picture_box(cartas.Cartas_segundo_espacio.Last());
@@ -358,8 +410,6 @@ namespace Solitario_proyecto
             else if (cartas.Cartas_tercer_espacio.Contains(carta_arrastrada))
             {
                 cartas.Cartas_tercer_espacio.Remove(carta_arrastrada);
-                if (carta_arrastrada.CartasDependientes.Count != 0)
-                    cartas.Cartas_tercer_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
                 if (cartas.Cartas_tercer_espacio.Count != 0)
                 {
                     picture_carta_detras = buscar_picture_box(cartas.Cartas_tercer_espacio.Last());
@@ -387,8 +437,6 @@ namespace Solitario_proyecto
             else if (cartas.Cartas_cuarto_espacio.Contains(carta_arrastrada))
             {
                 cartas.Cartas_cuarto_espacio.Remove(carta_arrastrada);
-                if (carta_arrastrada.CartasDependientes.Count != 0)
-                    cartas.Cartas_cuarto_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
                 if (cartas.Cartas_cuarto_espacio.Count != 0)
                 {
                     picture_carta_detras = buscar_picture_box(cartas.Cartas_cuarto_espacio.Last());
@@ -416,8 +464,6 @@ namespace Solitario_proyecto
             else if (cartas.Cartas_quinto_espacio.Contains(carta_arrastrada))
             {
                 cartas.Cartas_quinto_espacio.Remove(carta_arrastrada);
-                if (carta_arrastrada.CartasDependientes.Count != 0)
-                    cartas.Cartas_quinto_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
                 if (cartas.Cartas_quinto_espacio.Count != 0)
                 {
                     picture_carta_detras = buscar_picture_box(cartas.Cartas_quinto_espacio.Last());
@@ -445,8 +491,6 @@ namespace Solitario_proyecto
             else if (cartas.Cartas_sexto_espacio.Contains(carta_arrastrada))
             {
                 cartas.Cartas_sexto_espacio.Remove(carta_arrastrada);
-                if (carta_arrastrada.CartasDependientes.Count != 0)
-                    cartas.Cartas_sexto_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
                 if (cartas.Cartas_sexto_espacio.Count != 0)
                 {
                     picture_carta_detras = buscar_picture_box(cartas.Cartas_sexto_espacio.Last());
@@ -474,8 +518,6 @@ namespace Solitario_proyecto
             else if (cartas.Cartas_septimo_espacio.Contains(carta_arrastrada))
             {
                 cartas.Cartas_septimo_espacio.Remove(carta_arrastrada);
-                if (carta_arrastrada.CartasDependientes.Count != 0)
-                    cartas.Cartas_septimo_espacio.RemoveRange(0, carta_arrastrada.CartasDependientes.Count);
                 if (cartas.Cartas_septimo_espacio.Count != 0)
                 {
                     picture_carta_detras = buscar_picture_box(cartas.Cartas_septimo_espacio.Last());
@@ -577,7 +619,8 @@ namespace Solitario_proyecto
 
         private async Task iniciar_juego()
         {
-            if(cartas == null)
+            timer.Start();
+            if (cartas == null)
             {
                 cartas = await cargar_recursos();
             }
@@ -902,7 +945,7 @@ namespace Solitario_proyecto
             Dispose();
         }
 
-        private async void iniciarToolStripMenuItem_Click(object sender, EventArgs e)
+        private void iniciarToolStripMenuItem_Click(object sender, EventArgs e)
         {
                  
         }
@@ -921,6 +964,8 @@ namespace Solitario_proyecto
             {
                 cartas = await barajar_cartas();
                 await iniciar_juego();
+                contador_seg = 0;
+                contador_min = 0;
             }
             else
             {
@@ -932,6 +977,7 @@ namespace Solitario_proyecto
         private async void fácilToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dificultad_facil = true;
+            lb_dificultad.Text = "Fácil";
             if (cartas == null)
             {
                 await iniciar_juego();
@@ -941,9 +987,44 @@ namespace Solitario_proyecto
         private async void difícilToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dificultad_facil = false;
+            lb_dificultad.Text = "Difícil";
             if (cartas == null)
             {
                 await iniciar_juego();
+            }
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.Z)
+            {
+                if(ultimoMovimiento != null)
+                {
+                    DialogResult respuesta = MessageBox.Show("¿Seguro de deshacer movimiento?", "Deshacer", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                    if (respuesta == DialogResult.OK)
+                    {
+
+                    }
+                }
+                
+            }
+                
+        }
+
+        private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void deshacerMovimientoCtrlZToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ultimoMovimiento != null)
+            {
+                DialogResult respuesta = MessageBox.Show("¿Seguro de deshacer movimiento?", "Deshacer", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                if (respuesta == DialogResult.OK)
+                {
+
+                }
             }
         }
     }

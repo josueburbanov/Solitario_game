@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.pctbx_baraja_0 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -76,6 +77,9 @@
             this.terminarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fácilToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.difícilToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lb_dificultad = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deshacerMovimientoCtrlZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_deck1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio1)).BeginInit();
@@ -113,6 +117,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_2)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pctbx_baraja_0
@@ -606,13 +611,44 @@
             this.difícilToolStripMenuItem.Text = "Difícil";
             this.difícilToolStripMenuItem.Click += new System.EventHandler(this.difícilToolStripMenuItem_Click);
             // 
+            // lb_dificultad
+            // 
+            this.lb_dificultad.AutoSize = true;
+            this.lb_dificultad.BackColor = System.Drawing.Color.Transparent;
+            this.lb_dificultad.Font = new System.Drawing.Font("Roboto", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_dificultad.ForeColor = System.Drawing.Color.White;
+            this.lb_dificultad.Location = new System.Drawing.Point(666, 71);
+            this.lb_dificultad.Name = "lb_dificultad";
+            this.lb_dificultad.Size = new System.Drawing.Size(77, 19);
+            this.lb_dificultad.TabIndex = 49;
+            this.lb_dificultad.Text = "Dificultad";
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deshacerMovimientoCtrlZToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(233, 48);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // deshacerMovimientoCtrlZToolStripMenuItem
+            // 
+            this.deshacerMovimientoCtrlZToolStripMenuItem.Name = "deshacerMovimientoCtrlZToolStripMenuItem";
+            this.deshacerMovimientoCtrlZToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl +z";
+            this.deshacerMovimientoCtrlZToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.deshacerMovimientoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.deshacerMovimientoCtrlZToolStripMenuItem.Text = "Deshacer movimiento";
+            this.deshacerMovimientoCtrlZToolStripMenuItem.Click += new System.EventHandler(this.deshacerMovimientoCtrlZToolStripMenuItem_Click);
+            // 
             // Form1
             // 
+            this.ContextMenuStrip = contextMenuStrip1;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Solitario_proyecto.Properties.Resources.back1;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1297, 676);
+            this.Controls.Add(this.lb_dificultad);
             this.Controls.Add(this.pctbx_baraja_2);
             this.Controls.Add(this.pctbx_baraja_1);
             this.Controls.Add(this.pctbx_espacio7_6);
@@ -663,6 +699,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Solitario";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_deck1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_espacio1)).EndInit();
@@ -701,6 +738,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctbx_baraja_2)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -756,6 +794,9 @@
         private System.Windows.Forms.ToolStripMenuItem terminarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fácilToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem difícilToolStripMenuItem;
+        private System.Windows.Forms.Label lb_dificultad;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem deshacerMovimientoCtrlZToolStripMenuItem;
     }
 }
 
