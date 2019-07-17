@@ -576,6 +576,8 @@ namespace Solitario_proyecto
         {
             if (dificultad_facil) return true;
             bool comparacion = false;
+            carta_arrastrada.Simbolo = Regex.Replace(carta_arrastrada.Simbolo, @"\s+", "");
+            carta_arrastrada.Palo = Regex.Replace(carta_arrastrada.Palo, @"\s+", "");
             if (carta_arrastrada.Palo == "corazones")
             {
                 comparacion = carta_caida.Palo == "treboles" || carta_caida.Palo == "negros";
