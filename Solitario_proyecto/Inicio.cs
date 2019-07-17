@@ -29,7 +29,7 @@ namespace Solitario_proyecto
             Usuario usuario_entrar = await check_usuario(textBox1.Text, textBox2.Text);
             if (usuario_entrar != null)
             {
-                Form1 form1 = new Form1(usuario_entrar);
+                Form1 form1 = new Form1(usuario_entrar, null);
                 Hide();
                 form1.ShowDialog();
                 Close();

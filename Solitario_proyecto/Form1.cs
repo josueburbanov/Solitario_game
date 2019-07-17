@@ -14,7 +14,7 @@ namespace Solitario_proyecto
     public partial class Form1 : Form
     {
         Baraja cartas;
-        Baraja cartas_repo;
+        public Baraja cartas_repo;
         public bool bandera_inicio;
         int contador_cartas_boca_abajo = 1;
         int puntos = 0;
@@ -45,10 +45,11 @@ namespace Solitario_proyecto
             lb_time.Text = min + ":" + seg;
         }
 
-        public Form1(Usuario usuario_entrar)
+        public Form1(Usuario usuario_entrar, Baraja cartas_repo)
         {
             InitializeComponent();
             this.usuario_entrar = usuario_entrar;
+            cartas = cartas_repo;
             lb_usuario.Text = usuario_entrar.Nombre;
             timer.Tick += Tick;
 
@@ -100,7 +101,6 @@ namespace Solitario_proyecto
             pctbxs_cartas_baraja.Add(pctbx_baraja_1);
             pctbxs_cartas_baraja.Add(pctbx_baraja_2);
         }
-
 
         private void pctbx_deck_DragEnter(object sender, DragEventArgs e)
         {
@@ -632,7 +632,6 @@ namespace Solitario_proyecto
                 contador_min = 0;
                 contador_seg = 0;
                 bandera_inicio = false;
-                cartas = cartas_repo;
                 cartas.Cartas_boca_abajo.Shuffle();
                 cartas.Cartas_primer_espacio.Shuffle();
                 cartas.Cartas_segundo_espacio.Shuffle();
@@ -901,6 +900,7 @@ namespace Solitario_proyecto
                 {
                     pctbx_baraja_2.Image = Image.FromFile(rutaImagen);
                     pctbx_baraja_2.Tag = cartas.Cartas_boca_abajo[i];
+                    break;
                 }
             }
         }
@@ -975,6 +975,7 @@ namespace Solitario_proyecto
             Fin form1 = new Fin(puntos, min + ":" + seg, usuario_entrar, this);
             Hide();
             form1.ShowDialog();
+            Close();
         }
 
         private void iniciarToolStripMenuItem_Click(object sender, EventArgs e)
@@ -987,16 +988,21 @@ namespace Solitario_proyecto
             Fin form1 = new Fin(puntos, min + ":" + seg, usuario_entrar, this);
             Hide();
             form1.ShowDialog();
+            Close();
         }
 
         private async void reiniciarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await iniciar_juego();
+            Form1 form1 = new Form1(usuario_entrar, cartas_repo);
+            await form1.iniciar_juego();
+            form1.ShowDialog();
+            Hide();
         }
 
         private async void fácilToolStripMenuItem_Click(object sender, EventArgs e)
         {
             bandera_inicio = true;
+            dificultad_facil = true;
             lb_dificultad.Text = "Fácil";
             if (cartas == null)
             {
@@ -1007,9 +1013,10 @@ namespace Solitario_proyecto
         private async void difícilToolStripMenuItem_Click(object sender, EventArgs e)
         {
             lb_dificultad.Text = "Difícil";
+            dificultad_facil = false;
             if (cartas == null)
             {
-                iniciar_juego();
+                await iniciar_juego();
             }
         }
 

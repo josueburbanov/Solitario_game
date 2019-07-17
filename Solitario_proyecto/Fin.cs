@@ -26,7 +26,8 @@ namespace Solitario_proyecto
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            form1.Show();
+            Form1 form1 = new Form1(usuario_entrar, this.form1.cartas_repo);
+            form1.ShowDialog();
             form1.bandera_inicio = true;
             await form1.iniciar_juego();
             Hide();
