@@ -139,6 +139,8 @@ namespace Solitario_proyecto
             {
                 Carta carta_arrastrada = (Carta)picture_arrastrado.Tag;
                 Carta carta_caida = (Carta)picture_caido.Tag;
+                carta_arrastrada.Simbolo = Regex.Replace(carta_arrastrada.Simbolo, @"\s+", "");
+                carta_arrastrada.Palo = Regex.Replace(carta_arrastrada.Palo, @"\s+", "");
                 if (carta_arrastrada.Valor == carta_caida.Valor + 1 && carta_arrastrada.Palo.Equals(carta_caida.Palo))
                 {
                     Guardar_ultimo_mov(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida, puntos);
@@ -282,39 +284,64 @@ namespace Solitario_proyecto
                 Carta carta_arrastrada = (Carta)picture_arrastrado.Tag;
                 Carta carta_caida = (Carta)picture_caido.Tag;
 
-                if (!carta_arrastrada.Boca_abajo && carta_caida.CartasDependientes.Count==0)
+                if (!carta_arrastrada.Boca_abajo)
                 {
-
-                    if (picture_caido.Tag == null && carta_arrastrada.Valor == 13)
+                    if (carta_caida == null)
                     {
-                        picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
-                        picture_arrastrado.BringToFront();
-                        revelar_carta_detras_arrastrada(carta_arrastrada);
-                    }
-                    if (colocar_carta_caida(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida))
-                    {
-
-                        if (!generar_nuevo_pctbx_carta_baraja(picture_arrastrado, true))
+                        if (picture_caido.Tag == null && carta_arrastrada.Valor == 13)
                         {
+                            picture_arrastrado.Location = new Point(picture_caido.Location.X, picture_caido.Location.Y);
+                            picture_arrastrado.BringToFront();
                             revelar_carta_detras_arrastrada(carta_arrastrada);
-                        }
-                        else
-                        {
-                            picture_arrastrado.AllowDrop = true;
-                            picture_arrastrado.DragEnter += pctbx_boca_abajo_DragEnter;
-                            carta_arrastrada.Boca_abajo = false;
-                            picture_arrastrado.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
-                        }
-                        if (carta_arrastrada.CartasDependientes.Count != 0)
-                        {
-                            colocar_cartas_dependientes(carta_arrastrada);
-                        }
-                        ultimoMovimiento.carta_arrastrada = carta_arrastrada;
-                        ultimoMovimiento.carta_caida = carta_caida;
-                        ultimoMovimiento.picture_arrastrado = picture_arrastrado;
-                        ultimoMovimiento.picture_caido = picture_caido;
-                        ultimoMovimiento.puntos = 0;
 
+                            if (!generar_nuevo_pctbx_carta_baraja(picture_arrastrado, true))
+                            {
+                                revelar_carta_detras_arrastrada(carta_arrastrada);
+                            }
+                            else
+                            {
+                                picture_arrastrado.AllowDrop = true;
+                                picture_arrastrado.DragEnter += pctbx_boca_abajo_DragEnter;
+                                carta_arrastrada.Boca_abajo = false;
+                                picture_arrastrado.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                            }
+                            if (carta_arrastrada.CartasDependientes.Count != 0)
+                            {
+                                colocar_cartas_dependientes(carta_arrastrada);
+                            }
+                        }
+                    }
+                    else if (carta_caida.CartasDependientes.Count == 0)
+                    {
+
+
+
+
+                        if (colocar_carta_caida(picture_arrastrado, picture_caido, carta_arrastrada, carta_caida))
+                        {
+
+                            if (!generar_nuevo_pctbx_carta_baraja(picture_arrastrado, true))
+                            {
+                                revelar_carta_detras_arrastrada(carta_arrastrada);
+                            }
+                            else
+                            {
+                                picture_arrastrado.AllowDrop = true;
+                                picture_arrastrado.DragEnter += pctbx_boca_abajo_DragEnter;
+                                carta_arrastrada.Boca_abajo = false;
+                                picture_arrastrado.MouseDown += new MouseEventHandler(pctbx_baraja_0_MouseDown);
+                            }
+                            if (carta_arrastrada.CartasDependientes.Count != 0)
+                            {
+                                colocar_cartas_dependientes(carta_arrastrada);
+                            }
+                            ultimoMovimiento.carta_arrastrada = carta_arrastrada;
+                            ultimoMovimiento.carta_caida = carta_caida;
+                            ultimoMovimiento.picture_arrastrado = picture_arrastrado;
+                            ultimoMovimiento.picture_caido = picture_caido;
+                            ultimoMovimiento.puntos = 0;
+
+                        }
                     }
                 }
 
@@ -949,7 +976,7 @@ namespace Solitario_proyecto
 
         private int contador_sumar(int i)
         {
-            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count-1)
+            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count - 1)
             {
                 contador_cartas_boca_abajo = 0;
             }
@@ -964,7 +991,7 @@ namespace Solitario_proyecto
         {
             if (contador_cartas_boca_abajo == 0)
             {
-                contador_cartas_boca_abajo = cartas.Cartas_boca_abajo.Count-1;
+                contador_cartas_boca_abajo = cartas.Cartas_boca_abajo.Count - 1;
             }
             else
             {
