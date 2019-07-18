@@ -22,6 +22,10 @@ namespace Solitario_proyecto
             lb_tiempo.Text = tiempo;
             this.usuario_entrar = usuario_entrar;
             this.form1 = form1;
+            if(form1.puntos == 520 || form1.puntos == 1040)
+            {
+                lb_Mensaje_Final.Text = "Ganador";
+            }
         }
 
         private async void button1_Click(object sender, EventArgs e)

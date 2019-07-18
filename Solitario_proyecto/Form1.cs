@@ -17,7 +17,7 @@ namespace Solitario_proyecto
         public Baraja cartas_repo;
         public bool bandera_inicio;
         int contador_cartas_boca_abajo = 1;
-        int puntos = 0;
+        public int puntos = 0;
         Usuario usuario_entrar = new Usuario();
         int contador_seg = 0;
         int contador_min = 0;
