@@ -282,7 +282,7 @@ namespace Solitario_proyecto
                 Carta carta_arrastrada = (Carta)picture_arrastrado.Tag;
                 Carta carta_caida = (Carta)picture_caido.Tag;
 
-                if (!carta_arrastrada.Boca_abajo)
+                if (!carta_arrastrada.Boca_abajo && carta_caida.CartasDependientes.Count==0)
                 {
 
                     if (picture_caido.Tag == null && carta_arrastrada.Valor == 13)
@@ -949,7 +949,7 @@ namespace Solitario_proyecto
 
         private int contador_sumar(int i)
         {
-            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count)
+            if (contador_cartas_boca_abajo == cartas.Cartas_boca_abajo.Count-1)
             {
                 contador_cartas_boca_abajo = 0;
             }
@@ -964,7 +964,7 @@ namespace Solitario_proyecto
         {
             if (contador_cartas_boca_abajo == 0)
             {
-                contador_cartas_boca_abajo = cartas.Cartas_boca_abajo.Count;
+                contador_cartas_boca_abajo = cartas.Cartas_boca_abajo.Count-1;
             }
             else
             {
