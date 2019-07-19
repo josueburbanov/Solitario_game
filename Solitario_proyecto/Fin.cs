@@ -22,7 +22,7 @@ namespace Solitario_proyecto
             lb_tiempo.Text = tiempo;
             this.usuario_entrar = usuario_entrar;
             this.form1 = form1;
-            if(form1.puntos == 520 || form1.puntos == 1040)
+            if((form1.puntos > 520 && form1.dificultad_facil) || (form1.puntos == 1040 && !form1.dificultad_facil))
             {
                 lb_Mensaje_Final.Text = "Ganador";
             }
